@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetivos y Resultados de Aprendizaje</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/venn.js"></script>
+</head>
+<body>
+    <h1 style="text-align: center;">Relación entre Objetivos y Resultados de Aprendizaje</h1>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'venn'
+            },
+            title: {
+                text: 'Diagrama de Venn: Objetivos vs. Resultados de Aprendizaje'
+            },
+            tooltip: {
+                pointFormat: '<b>{point.name}:</b> {point.description}'
+            },
+            series: [{
+                data: [
+                    // Relaciones entre objetivos y resultados
+                    { name: 'Objetivo 1', description: 'Fundamentos matemáticos para resolver problemas', sets: ['Objetivo 1'], value: 7 },
+                    { name: 'Resultado 1', description: 'Modelos matemáticos aplicados', sets: ['Resultado 1'], value: 7 },
+                    { name: 'Objetivo 2', description: 'Desarrollo de software innovador', sets: ['Objetivo 2'], value: 8 },
+                    { name: 'Resultado 2', description: 'Diseño de software en la nube', sets: ['Resultado 2'], value: 5 },
+                    { name: 'Resultado 11', description: 'Bases de datos telemáticas', sets: ['Resultado 11'], value: 5 },
+                    { name: 'Intersección 1-2', sets: ['Objetivo 1', 'Resultado 1'], value: 3 },
+                    { name: 'Intersección 2-11', sets: ['Objetivo 2', 'Resultado 2'], value: 4 },
+                    { name: 'Objetivo 3', description: 'Arquitecturas telemáticas', sets: ['Objetivo 3'], value: 9 },
+                    { name: 'Resultado 3', description: 'Sistemas distribuidos', sets: ['Resultado 3'], value: 4 },
+                    { name: 'Intersección 3-4', sets: ['Objetivo 3', 'Resultado 3'], value: 2 }
+                ]
+            }]
+        });
+    </script>
+</body>
+</html>

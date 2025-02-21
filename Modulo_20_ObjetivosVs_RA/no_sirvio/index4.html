@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetivos y Resultados de Aprendizaje</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/venn.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px;
+            color: #333;
+        }
+        #container {
+            margin: 0 auto;
+            max-width: 1000px;
+            height: 800px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relación entre Objetivos y Resultados de Aprendizaje</h1>
+    <div id="container"></div>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'venn'
+            },
+            title: {
+                text: 'Relación entre Objetivos de Programa y Resultados de Aprendizaje'
+            },
+            tooltip: {
+                pointFormat: '<b>{point.name}:</b> {point.description}'
+            },
+            series: [{
+                data: [
+                    // Objetivo 1 y resultados relacionados
+                    { name: 'OP1', description: 'Aplicar fundamentos matemáticos para resolver problemas complejos en ingeniería.', sets: ['OP1'], value: 10 },
+                    { name: 'R1', description: 'Aplica modelos matemáticos para resolver problemas de ingeniería en soluciones telemáticas.', sets: ['R1'], value: 7 },
+                    { name: 'R9', description: 'Desarrolla algoritmos para la solución de problemas de ingeniería.', sets: ['R9'], value: 7 },
+                    { name: 'Intersección OP1', description: 'Matemáticas aplicadas y resolución de problemas.', sets: ['OP1', 'R1', 'R9'], value: 5 },
+
+                    // Objetivo 2 y resultados relacionados
+                    { name: 'OP2', description: 'Desarrollar soluciones de software innovadoras.', sets: ['OP2'], value: 10 },
+                    { name: 'R2', description: 'Diseña software para entornos de nube.', sets: ['R2'], value: 7 },
+                    { name: 'R20', description: 'Diseña sistemas con arquitecturas y patrones de software.', sets: ['R20'], value: 7 },
+                    { name: 'Intersección OP2', description: 'Diseño de software innovador y eficiente.', sets: ['OP2', 'R2', 'R20'], value: 5 },
+
+                    // Objetivo 3 y resultados relacionados
+                    { name: 'OP3', description: 'Diseñar arquitecturas telemáticas eficientes.', sets: ['OP3'], value: 10 },
+                    { name: 'R3', description: 'Diseña sistemas distribuidos con arquitecturas telemáticas.', sets: ['R3'], value: 7 },
+                    { name: 'R5', description: 'Diseña infraestructura telemática eficiente considerando aspectos técnicos y sociales.', sets: ['R5'], value: 7 },
+                    { name: 'Intersección OP3', description: 'Infraestructura y sistemas telemáticos.', sets: ['OP3', 'R3', 'R5'], value: 5 },
+
+                    // Objetivo 4 y resultados relacionados
+                    { name: 'OP4', description: 'Analizar y experimentar con datos telemáticos.', sets: ['OP4'], value: 10 },
+                    { name: 'R4', description: 'Analiza datos a gran escala utilizando experimentación adecuada.', sets: ['R4'], value: 7 },
+                    { name: 'R13', description: 'Aplica técnicas matemáticas para analizar datos en soluciones telemáticas.', sets: ['R13'], value: 7 },
+                    { name: 'Intersección OP4', description: 'Experimentación y análisis de datos.', sets: ['OP4', 'R4', 'R13'], value: 5 },
+
+                    // Objetivo 5 y resultados relacionados
+                    { name: 'OP5', description: 'Desarrollar conciencia ética y responsabilidad social.', sets: ['OP5'], value: 10 },
+                    { name: 'R14', description: 'Trabaja en equipo en entornos colaborativos de manera ética.', sets: ['R14'], value: 7 },
+                    { name: 'R16', description: 'Ejecución con responsabilidad ética y profesional.', sets: ['R16'], value: 7 },
+                    { name: 'Intersección OP5', description: 'Ética y trabajo en equipo.', sets: ['OP5', 'R14', 'R16'], value: 5 },
+
+                    // Objetivo 6 y resultados relacionados
+                    { name: 'OP6', description: 'Gestionar proyectos con herramientas y metodologías adecuadas.', sets: ['OP6'], value: 10 },
+                    { name: 'R17', description: 'Lidera equipos de gestión de proyectos en ingeniería telemática.', sets: ['R17'], value: 7 },
+                    { name: 'R18', description: 'Propone proyectos sustentando su viabilidad económica y técnica.', sets: ['R18'], value: 7 },
+                    { name: 'Intersección OP6', description: 'Gestión y liderazgo en proyectos.', sets: ['OP6', 'R17', 'R18'], value: 5 },
+
+                    // Objetivo 7 y resultados relacionados
+                    { name: 'OP7', description: 'Promover responsabilidad social y sostenibilidad.', sets: ['OP7'], value: 10 },
+                    { name: 'R19', description: 'Analiza el contexto social considerando responsabilidad social.', sets: ['R19'], value: 7 },
+                    { name: 'R15', description: 'Aplica estrategias de autoaprendizaje continuo.', sets: ['R15'], value: 7 },
+                    { name: 'Intersección OP7', description: 'Sostenibilidad y responsabilidad social.', sets: ['OP7', 'R19', 'R15'], value: 5 }
+                ]
+            }]
+        });
+    </script>
+</body>
+</html>

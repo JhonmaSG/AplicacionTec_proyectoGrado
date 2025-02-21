@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetivos y Resultados Relacionados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #f9f9f9;
+        }
+        .column {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .left, .right {
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .center {
+            position: relative;
+            flex: 0 0 2px;
+            background: #e0e0e0;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f3f3f3;
+            border-radius: 5px;
+        }
+        li:hover {
+            background: #dfe6f7;
+        }
+    </style>
+</head>
+<body>
+    <div class="column left">
+        <ul id="objectives">
+            <li id="op1">OP1: Aplicar fundamentos matemáticos...</li>
+            <li id="op2">OP2: Desarrollar soluciones de software...</li>
+            <li id="op3">OP3: Diseñar arquitecturas telemáticas...</li>
+            <!-- Otros objetivos -->
+        </ul>
+    </div>
+    <div class="center" id="connector"></div>
+    <div class="column right">
+        <ul id="results">
+            <li id="r1">R1: Aplica modelos matemáticos...</li>
+            <li id="r2">R2: Diseña software para entornos de nube...</li>
+            <li id="r3">R3: Diseña sistemas distribuidos...</li>
+            <!-- Otros resultados -->
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const connections = [
+                { from: "op1", to: "r1" },
+                { from: "op2", to: "r2" },
+                { from: "op3", to: "r3" }
+                // Agrega más relaciones aquí
+            ];
+            
+            const container = document.getElementById('connector');
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.style.width = "100%";
+            svg.style.height = "100vh";
+            container.appendChild(svg);
+            
+            connections.forEach(conn => {
+                const fromElem = document.getElementById(conn.from);
+                const toElem = document.getElementById(conn.to);
+                
+                if (fromElem && toElem) {
+                    const fromRect = fromElem.getBoundingClientRect();
+                    const toRect = toElem.getBoundingClientRect();
+                    const svgRect = svg.getBoundingClientRect();
+
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", fromRect.right - svgRect.left);
+                    line.setAttribute("y1", fromRect.top + fromRect.height / 2 - svgRect.top);
+                    line.setAttribute("x2", toRect.left - svgRect.left);
+                    line.setAttribute("y2", toRect.top + toRect.height / 2 - svgRect.top);
+                    line.setAttribute("stroke", "#3498db");
+                    line.setAttribute("stroke-width", "2");
+
+                    svg.appendChild(line);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

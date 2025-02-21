@@ -1,0 +1,77 @@
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.container {
+  position: relative;
+  height: 100vh;
+}
+
+/* Estilo para el botón de tres rayas */
+.menu-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: #90ee90; /* Verde claro */
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.menu-btn .line {
+  width: 30px;
+  height: 4px;
+  background-color: black;
+  transition: transform 0.3s ease;
+}
+
+/* Menú */
+.menu {
+  display: none;
+  flex-direction: column;
+  background-color: white;
+  position: absolute;
+  top: 70px;  /* Separado de las tres rayas */
+  left: 10px;
+  width: 200px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.menu-item {
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Iconos SVG */
+.menu-item svg {
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Menú visible cuando se activa */
+.menu.show {
+  display: flex;
+}

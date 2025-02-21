@@ -1,0 +1,119 @@
+SEMESTRE I
+Cálculo Diferencial
+Cátedra Francisco José de Caldas
+Álgebra Lineal
+Cátedra Democracia y Ciudadanía
+Producción y Comprensión de Textos I
+Introducción a Algoritmos
+Lógica Matemática
+
+
+SEMESTRE II
+Física I: Mecánica Newtoniana
+Cálculo Integral
+Producción y comprensión de Textos II
+Administración
+Cátedra de Contexto
+Estructura de Datos
+Programación Orientada a Objetos
+
+
+SEMESTRE III
+   Contabilidad General
+   Fundamentos de Organización
+Física II: Electromagnetismo
+Ciencia Tecnología y Sociedad
+Programación Multinivel
+Bases de Datos
+
+
+SEMESTRE IV
+   Matemáticas Especiales
+   Análisis y métodos numéricos
+   Fundamentos de Economía
+   Tic's en las organizaciones
+Ética y Sociedad
+Programación Avanzada
+Diseño Lógico
+
+SEMESTRE V
+   Transmisión de Datos
+   Aplicaciones para Internet
+   Programación Web
+   Bases de Datos Distribuidas
+Análisis de Sistemas
+Sistemas Operacionales
+Taller de Investigación
+
+
+SEMESTRE VI
+   Fundamentos de Telemática
+   Protocolos de Comunicación
+   Programación por Componentes
+   Regulación para Telecomunicaciones
+Trabajo de Grado Tecnológico
+Inteligencia Artificial
+Arquitectura de Computadores
+
+PROPEDÉUTICO
+Ecuaciones Diferenciales
+Bases de Datos Avanzadas
+Ingeniería de Software
+
+
+SEMESTRE VII
+Cálculo Multivariado
+Ingeniería Económica
+Probabilidad y Estadística
+Sistemas Distribuidos
+Teoría General de Sistemas
+
+
+SEMESTRE VIII
+Física III: Ondas y Física Moderna
+Formulación y Evaluación de Proyectos
+Análisis de Fourier
+Redes Corporativas
+Sistemas Abiertos
+Teoría de la Información
+
+SEMESTRE IX
+   Computación Cuántica
+   Simulación de Sistemas Dinámicos
+   Criptología
+   Investigación de Operaciones
+Trabajo de Grado I
+Planificación y Diseño de Redes
+Redes de Alta Velocidad
+Seguridad en Redes
+
+
+SEMESTRE X
+   Análisis de Datos
+   Bioinformática
+   Gestión de Redes Telemáticas
+   Seminario de Telemática
+   Redes Inalámbricas
+   Arquitectura Empresarial
+Trabajo de Grado II
+Gerencia y Auditoría en Redes
+
+
+
+
+SEMESTRE I: Aplicaciones simples y lógicas
+SEMESTRE II: Aplicaciones stand Alone con una interfaz de usuario local
+SEMESTRE III: Aplicaciones arquitectónicas
+SEMESTRE IV: Aplicaciones Web
+SEMESTRE V: Proyectos para internet
+SEMESTRE VI: Aplicaciones orientadas a servicios e inteligentes
+SEMESTRE VII: Proyectos Ingenieriles de Software
+SEMESTRE VIII: Sistemas en ambientes distribuidos
+SEMESTRE IX: Servicios telemáticos en redes corporativas
+SEMESTRE X: Gestión de la calidad en redes telemáticas
+
+
+
+
+
+

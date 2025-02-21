@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetivos y Resultados de Aprendizaje</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/venn.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px;
+            color: #333;
+        }
+        #container {
+            margin: 0 auto;
+            max-width: 800px;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relación entre Objetivos y Resultados de Aprendizaje</h1>
+    <div id="container"></div>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'venn'
+            },
+            title: {
+                text: 'Diagrama de Venn: Objetivos y Resultados de Aprendizaje'
+            },
+            tooltip: {
+                pointFormat: '<b>{point.name}:</b> {point.description}'
+            },
+            series: [{
+                data: [
+                    // Objetivo 1 y resultados relacionados
+                    { name: 'Objetivo 1', description: 'Aplicar fundamentos matemáticos para resolver problemas complejos en ingeniería.', sets: ['Objetivo 1'], value: 10 },
+                    { name: 'Resultado 1', description: 'Aplica modelos matemáticos para resolver problemas de ingeniería en soluciones telemáticas.', sets: ['Resultado 1'], value: 7 },
+                    { name: 'Resultado 2', description: 'Desarrolla algoritmos para la solución de problemas de ingeniería.', sets: ['Resultado 2'], value: 7 },
+                    { name: 'Intersección O1-R1-R2', description: 'Fundamentos matemáticos aplicados a modelos y algoritmos.', sets: ['Objetivo 1', 'Resultado 1', 'Resultado 2'], value: 5 },
+
+                    // Objetivo 2 y resultados relacionados
+                    { name: 'Objetivo 2', description: 'Desarrollar soluciones de software innovadoras.', sets: ['Objetivo 2'], value: 10 },
+                    { name: 'Resultado 3', description: 'Diseña software para entornos de nube.', sets: ['Resultado 3'], value: 5 },
+                    { name: 'Resultado 4', description: 'Procesa datos para diseñar sistemas con arquitecturas de software.', sets: ['Resultado 4'], value: 5 },
+                    { name: 'Intersección O2-R3-R4', description: 'Soluciones de software innovadoras con diseño y procesamiento de datos.', sets: ['Objetivo 2', 'Resultado 3', 'Resultado 4'], value: 4 },
+
+                    // Objetivo 3 y resultados relacionados
+                    { name: 'Objetivo 3', description: 'Diseñar arquitecturas telemáticas eficientes.', sets: ['Objetivo 3'], value: 10 },
+                    { name: 'Resultado 5', description: 'Diseña sistemas distribuidos con arquitecturas telemáticas.', sets: ['Resultado 5'], value: 7 },
+                    { name: 'Resultado 6', description: 'Diseña infraestructura telemática eficiente considerando aspectos técnicos y sociales.', sets: ['Resultado 6'], value: 7 },
+                    { name: 'Intersección O3-R5-R6', description: 'Arquitecturas telemáticas eficientes en entornos complejos.', sets: ['Objetivo 3', 'Resultado 5', 'Resultado 6'], value: 5 },
+
+                    // Otros objetivos y resultados pueden añadirse aquí de manera similar.
+                ]
+            }]
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+Si tengo estos resultados de aprendizaje: <<"R1	Aplica modelos matemáticos para resolver problemas de ingeniería en soluciones telemáticas, considerando restricciones técnicas y de eficiencia	
+R2	Diseña software para entornos de nube, teniendo en cuenta escalabilidad, seguridad y eficiencia	
+R3	Diseña sistemas distribuidos con arquitecturas telemáticas, considerando criterios de eficiencia, escalabilidad y seguridad	
+R4	Analiza datos a gran escala utilizando experimentación adecuada para obtener conclusiones informadas en ingeniería telemática	
+R5	Diseña infraestructura telemática eficiente considerando los aspectos técnicos, económicos y sociales del entorno	
+R6	Analiza problemas complejos de ingeniería telemática para proponer soluciones efectivas	
+R7	Procesa datos para diseñar sistemas con arquitecturas de software	
+R8	Construye sistemas informáticos para satisfacer las necesidades del entorno	
+R9	Desarrolla algoritmos para la solución de problemas de ingeniería.	
+R10	Automatiza procesos para mejorar la eficiencia en entornos telemáticos	
+R11	Diseña bases de datos para gestionar y organizar información en soluciones telemáticas.	
+R12	Evalúa problemas de complejidad algorítmica para optimizar soluciones en ingeniería telemática.	
+R13	Aplica técnicas matemáticas para analizar datos en el contexto de soluciones telemáticas	
+R14	Trabaja en equipo en entornos colaborativos con habilidades interpersonales, de una manera ética.	
+R15	Aplica estrategias de autoaprendizaje continuo para la adquisición y actualización de conocimientos en el ámbito telemático.	
+R16	Ejecuta sus actuaciones con responsabilidad ética y profesional en el ámbito de la ingeniería telemática.	
+R17	Lidera equipos de gestión de proyectos en el contexto de la ingeniería telemática, promoviendo la buena comunicación y la claridad en los objetivos.	
+R18	Propone proyectos de ingeniería sustentando su viabilidad económica y técnica en el contexto de la ingeniería telemática.	
+R19	Analiza el contexto social considerando elementos de responsabilidad social en la práctica de la ingeniería telemática.	
+R20	Diseña sistemas con arquitecturas y patrones de software. ">>; puedes colocar en una columna todos estos resultados de aprendizaje y en la segunda columna el porcentaje con el que el artefacto tecnológico llamado: "Documento de Arquitectura" está relacionado con cada uno de los resultados de aprendizaje. En la tercera columna el valor en texto que dé cuenta de ese porcentaje de afinidad del resultado con el entregable, que puede ser: "muy alto, alto, medio alto, medio, medio bajo, bajo, muy bajo o nulo"?	

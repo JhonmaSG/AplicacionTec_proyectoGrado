@@ -1,0 +1,134 @@
+/* Estilos Generales */
+body {
+    font-family: 'Arial', sans-serif;
+    // background-color: #f4f4f9;
+    background: linear-gradient(to bottom right, #4CAF50, #0599f5);
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.5s, color 0.5s;
+}
+
+body.night-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Contenedor */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s, color 0.5s;
+}
+
+body.night-mode .container {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    transition: color 0.5s;
+}
+
+/* Botones */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+body.night-mode .btn {
+    background-color: #555555;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: center;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+table td {
+    background-color: #f9f9f9;
+}
+
+body.night-mode table td {
+    background-color: #444444;
+}
+
+table tr:hover {
+    background-color: #f0f8ff;
+}
+
+body.night-mode table tr:hover {
+    background-color: #3e3e3e;
+}
+
+table td.clickable:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+/* Descripción */
+.description, .justification {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s ease;
+}
+
+body.night-mode .description, body.night-mode .justification {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+table td.active {
+    transform: scale(1.6); /* Tamaño aumentado */
+    background-color: #ffeb3b; /* Amarillo para destacar */
+    box-shadow: 0 0 10px #ffc107; /* Resplandor */
+    color: #333; /* Color del texto */
+    font-weight: bold; /* Texto resaltado */
+    z-index: 10; /* En frente de todo */
+    position: relative; /* Necesario para el z-index */
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+}

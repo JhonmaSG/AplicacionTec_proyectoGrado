@@ -29,7 +29,7 @@ if (!isset($_SESSION['nid'])) {
                     </div>
                     <div class="card-body">
                         <?php if (!empty($mensaje)): ?>
-                            <div class="alert alert-danger text-center"><?php echo $mensaje; ?></div>
+                            <div class="alert alert-info text-center"><?php echo $mensaje; ?></div>
                         <?php endif; ?>
 
                         <form action="actualizar_password.php" method="POST">

@@ -26,7 +26,7 @@ $pregunta = isset($_SESSION['pregunta']) ? $_SESSION['pregunta'] : "No disponibl
                         <p><strong><?php echo $pregunta; ?></strong></p>
 
                         <?php if (!empty($mensaje)): ?>
-                            <div class="alert alert-danger text-center"><?php echo $mensaje; ?></div>
+                            <div class="alert alert-info text-center"><?php echo $mensaje; ?></div>
                         <?php endif; ?>
 
                         <form action="verificar_respuesta.php" method="POST">

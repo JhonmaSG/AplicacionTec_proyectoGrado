@@ -45,7 +45,7 @@ h1 {
 .table th, .table td {
   padding: 10px;
   text-align: center;
-  // border: 1px solid #dee2e6;
+  /* border: 1px solid #dee2e6; */
   border: 1px solid #ddd;
 }
 

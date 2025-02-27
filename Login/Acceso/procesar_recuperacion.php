@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../ConfiguracionBD/ConexionBDPDO.php';
+include '../ConfiguracionBD/ConexionBD.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);

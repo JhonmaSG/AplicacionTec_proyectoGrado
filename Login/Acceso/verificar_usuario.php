@@ -1,6 +1,9 @@
 <?php
 session_start();
-include '../ConfiguracionBD/ConexionBDPDO.php';
+$_SESSION['ultimo_acceso'] = time(); // Tiempo actual
+$_SESSION['duracion_sesion'] = 60; // seg
+
+include '../ConfiguracionBD/ConexionBD.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
@@ -28,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $_SESSION['mensaje'] = "✅ Login exitoso. Redirigiendo...";
 
-            // Simulamos una redirección, pero sin header() para pruebas
-            header("Location: login.php");
-            //exit();
+            // Redirección
+            header("Location: /proyectoGrado/Modulo_01_tabla_09/materias.php");
+            exit();
         } else {
             $_SESSION['mensaje'] = "❌ Contraseña incorrecta.";
         }
@@ -42,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 
     // Redirigir a login.php con el mensaje
-    header("Location: login.php");
+    header("Location: /proyectoGrado/Login/Acceso/login.php");
     exit();
 }
 ?>

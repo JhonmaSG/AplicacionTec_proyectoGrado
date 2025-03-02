@@ -20,6 +20,7 @@ unset($_SESSION['mensaje']); // Limpiar el mensaje después de mostrarlo
                 <div class="card shadow-lg">
                     <div class="card-header text-center">
                         <h3>Iniciar Sesión</h3>
+                        <img src="img/logo.png" width="150px" alt="Logo">
                     </div>
                     <div class="card-body">
 

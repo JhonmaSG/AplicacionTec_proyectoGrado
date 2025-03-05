@@ -19,47 +19,26 @@ if (isset($_SESSION['ultimo_acceso'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visualización de Deserción</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="../assets/css/styles_menu.css">
-  <script src="https://code.highcharts.com/highcharts.js"></script>
-  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-  <script src="https://code.highcharts.com/modules/exporting.js"></script>
-  <script src="https://code.highcharts.com/modules/export-data.js"></script>
-  <script src="https://code.highcharts.com/modules/full-screen.js"></script>
-  <script>
-    //logout
-    function cerrarSesion() {
-      // Petición al servidor para cerrar sesión
-      fetch('../Login/Acceso/logout.php', {
-          method: 'POST',
-          credentials: 'include'
-      })
-      .then(response => {
-          if (response.ok) {
-              window.location.href = "../Login/Acceso/logout.php";
-          } else {
-              alert("Error al cerrar sesión");
-          }
-      })
-      .catch(error => console.error('Error:', error));
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relaciones Verbos - Materias - Áreas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../assets/css/styles_menu.css">
 </head>
 <body>
 
-<!-- Menú -->
-<div class="top-bar">
-    <button class="menu-btn" id="menu-btn">☰ Menú</button>
-    <button class="logout-btn" id="logout-btn" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
-</div>
 
 
-<!-- Menú -->
+    <!-- Botón de tres rayas -->
+    <button class="menu-btn" id="menu-btn">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </button>
+
+    <!-- Menú -->
     <div class="menu" id="menu">
       <!-- Primer opción de menú -->
       <a href="../tabla_09_Modulo_01/materias.html" class="menu-item">
@@ -149,51 +128,52 @@ if (isset($_SESSION['ultimo_acceso'])) {
 
 
 
-  <div class="container">
-    <h1>Visualización de Deserción por Materia</h1>
-    <!-- Filtros -->
-    <div class="filters">
-      <label for="area-filter">Filtrar por área:</label>
-      <select id="area-filter">
-        <!-- Opciones dinámicas -->
-      </select>
+    <div class="container">
+        <h1>Relaciones de Verbos, Materias y Áreas</h1>
+        <!-- Filtros -->
+        <div class="filters">
+            <label for="area-filter">Área:</label>
+            <select id="area-filter">
+                <option value="Todos">Todos</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Programación">Programación</option>
+                <option value="Ciencias Básicas">Ciencias Básicas</option>
+            </select>
 
-      <label for="search-materia">Buscar materia:</label>
-      <input type="text" id="search-materia" placeholder="Nombre de la materia">
+            <label for="verb-filter">Verbo:</label>
+            <select id="verb-filter">
+                <option value="Todos">Todos</option>
+                <option value="Guardar">Guardar</option>
+                <option value="Borrar">Borrar</option>
+                <option value="Sincronizar">Sincronizar</option>
+                <option value="Actualizar">Actualizar</option>
+            </select>
+
+            <label for="multi-area-filter">Verbos en Varias Áreas:</label>
+            <input type="checkbox" id="multi-area-filter">
+        </div>
+
+        <!-- Descripción del verbo -->
+        <div id="verb-description" class="description">
+            <p>Selecciona un verbo o una materia para ver más información.</p>
+        </div>
+
+        <!-- Tabla de datos -->
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>Materia</th>
+                    <th>Verbo</th>
+                    <th>Área</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas dinámicas -->
+            </tbody>
+        </table>
     </div>
 
-    <!-- Botones -->
-    <div class="actions">
-      <button id="show-chart" class="btn">Mostrar Gráfica</button>
-      <button id="print-table" class="btn">Imprimir Tabla</button>
-      <button id="fullscreen-chart" class="btn">Vista Fullscreen</button>
-    </div>
-
-    <!-- Tabla -->
-    <table id="data-table" class="table">
-      <thead>
-        <tr>
-          <th>Materia</th>
-          <th>Área</th>
-          <th>Semestre</th>
-          <th>Inscritos</th>
-          <th>Reprobados</th>
-          <th>Tasa de Reprobación (%)</th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-        <!-- Filas dinámicas -->
-      </tbody>
-    </table>
-
-    <!-- Contenedor para la gráfica -->
-    <div id="chart-container" class="chart"></div>
-    <div id="grafica-container" style="width:100%; height:600px;"></div>
-
-  </div>
-
-  <script src="script.js"></script>
-  <script src="../assets/js/script_menu.js"></script>
+    <script src="scripts.js"></script>
+    <script src="../assets/js/script_menu.js"></script>
 </body>
 </html>
-

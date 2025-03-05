@@ -12,29 +12,37 @@ body {
 }
 
 /* Estilo para el botón de tres rayas */
-.menu-btn {
+.top-bar {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  position: absolute !important;
+  justify-content: space-between; /* Coloca los elementos en los extremos */
   align-items: center;
-  width: 40px;
-  height: 40px;
-  background-color: #90ee90; /* Verde claro */
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  border-radius: 5px;
+  padding: 10px 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
 }
 
-.menu-btn .line {
-  width: 30px;
-  height: 4px;
-  background-color: black;
-  transition: transform 0.3s ease;
+.menu-btn {
+  background-color: #90ee90; /* Verde claro */
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+  margin-left: 10px;
 }
+
+.logout-btn {
+  background-color: #ff6666; /* Rojo claro */
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+  margin-right: 25px;
+}
+
 
 /* Menú */
 .menu {
@@ -42,13 +50,15 @@ body {
   flex-direction: column;
   background-color: white;
   position: absolute;
-  top: 70px;  /* Separado de las tres rayas */
+  top: 70px;
   left: 10px;
   width: 200px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   padding: 10px;
+  z-index: 9999;
 }
+
 
 .menu-item {
   text-decoration: none;
@@ -75,3 +85,5 @@ body {
 .menu.show {
   display: flex;
 }
+
+

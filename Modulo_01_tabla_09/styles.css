@@ -9,7 +9,8 @@ body {
 .container {
   max-width: 1200px;
   margin: auto;
-  padding: 20px;
+  padding: 30px;
+  padding-top: 50px;
 }
 
 h1 {
@@ -17,7 +18,8 @@ h1 {
   margin-bottom: 20px;
 }
 
-.filters, .actions {
+.filters,
+.actions {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
@@ -42,7 +44,8 @@ h1 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.table th, .table td {
+.table th,
+.table td {
   padding: 10px;
   text-align: center;
   /* border: 1px solid #dee2e6; */
@@ -50,8 +53,8 @@ h1 {
 }
 
 table th {
-    background-color: #4CAF50;
-    color: white;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .chart {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 // publicapis.dev
 /*
 // Datos simulados
@@ -36,9 +37,6 @@ function renderChart(data) {
 // Renderizar gráfica al cargar la página
 renderChart(chartData);
 */
-
-
-
 
 // Fullscreen para la gráfica
 document.getElementById('fullscreen-chart').addEventListener('click', () => {
@@ -466,9 +464,6 @@ function cargarAreas() {
   });
 }
 
-
-
-
 const graficaContainer = document.getElementById("grafica-container");
 // Función para preparar datos de la gráfica desde la tabla
 function generarDatosGrafica(materiasFiltradas) {
@@ -521,12 +516,6 @@ function actualizarGrafica(materiasFiltradas) {
     },
   });
 }
-
-
-
-
-
-
 
 
 // Filtrar materias por área y búsqueda

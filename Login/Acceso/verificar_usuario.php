@@ -1,7 +1,7 @@
 <?php
 session_start();
 $_SESSION['ultimo_acceso'] = time(); // Tiempo actual
-$_SESSION['duracion_sesion'] = 60; // seg
+$_SESSION['duracion_sesion'] = 300; // seg
 
 include '../ConfiguracionBD/ConexionBD.php';
 

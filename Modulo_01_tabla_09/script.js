@@ -46,7 +46,8 @@ document.getElementById('fullscreen-chart').addEventListener('click', () => {
 
 // Evento para mostrar gráfica con datos dinámicos (enlace a filtros)
 document.getElementById('show-chart').addEventListener('click', () => {
-  // Aquí iría lógica para obtener datos filtrados y llamar renderChart
+  document.getElementById("grafica-container").scrollIntoView({ behavior: "smooth" });
+  // Lógica para obtener datos filtrados y llamar renderChart
   renderChart(chartData);
 });
 
@@ -505,6 +506,7 @@ function actualizarGrafica(materiasFiltradas) {
       max: 100,
     },
     tooltip: {
+      borderRadius: 8,
       pointFormat: "<b>{point.y:.2f}%</b>",
     },
     series: seriesData,
@@ -514,7 +516,14 @@ function actualizarGrafica(materiasFiltradas) {
     credits: {
       enabled: false,
     },
-  });
+    plotOptions: {
+      series: {
+        animation: {
+            duration: 2500
+          }
+      }
+    }
+    });
 }
 
 

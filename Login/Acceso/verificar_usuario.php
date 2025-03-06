@@ -1,7 +1,7 @@
 <?php
 session_start();
 $_SESSION['ultimo_acceso'] = time(); // Tiempo actual
-$_SESSION['duracion_sesion'] = 3; // seg
+$_SESSION['duracion_sesion'] = 300; // seg
 
 include '../ConfiguracionBD/ConexionBD.php';
 
@@ -28,8 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['nid'] = $usuario['nid'];
             $_SESSION['nombre'] = $usuario['nombres'];
             $_SESSION['rol'] = $usuario['rol_id'];
-
-            $_SESSION['mensaje'] = "✅ Login exitoso. Redirigiendo...";
 
             // Redirección
             header("Location: /proyectoGrado/Modulo_01_tabla_09/materias.php");

@@ -1,7 +1,7 @@
 <?php
 session_start();
 $_SESSION['ultimo_acceso'] = time(); // Tiempo actual
-$_SESSION['duracion_sesion'] = 300; // seg
+$_SESSION['duracion_sesion'] = 3; // seg
 
 include '../ConfiguracionBD/ConexionBD.php';
 
@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $resultado = $stmt->get_result();
-   
+
     if ($resultado->num_rows > 0) {
         $usuario = $resultado->fetch_assoc();
 
@@ -48,4 +48,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: /proyectoGrado/Login/Acceso/login.php");
     exit();
 }
-?>

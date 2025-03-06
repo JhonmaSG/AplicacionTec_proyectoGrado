@@ -1,32 +1,19 @@
-<?php
-session_start();
-if (!isset($_SESSION['nid'])) {
-    header("Location: ../Login/Acceso/login.php");
-    exit();
-}
-
-if (isset($_SESSION['ultimo_acceso'])) {
-  $tiempo_inactivo = time() - $_SESSION['ultimo_acceso']; // Diferencia de tiempo
-
-  if ($tiempo_inactivo > $_SESSION['duracion_sesion']) {
-      session_unset();  // Limpiar variables de sesión
-      session_destroy(); // Destruir la sesión
-      header("Location: ../Login/Acceso/login.php?mensaje=sesion_expirada"); // Redirigir con mensaje
-      exit();
-  } else {
-      $_SESSION['ultimo_acceso'] = time(); // Refrescar el tiempo de sesión
-  }
-}
-?>
+<?php include '../assets/php/ultimo_acceso.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visor de PDF con Menú Lateral</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../assets/css/styles_menu.css">
 </head>
+
 <body>
+
+    <?php include '../assets/php/menu.php'; ?>
+
     <!-- Menú lateral -->
     <nav>
         <h2>Índice</h2>
@@ -101,5 +88,7 @@ if (isset($_SESSION['ultimo_acceso'])) {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="script.js"></script>
+    <script src="/proyectoGrado/assets/js/script_menu.js"></script>
 </body>
+
 </html>

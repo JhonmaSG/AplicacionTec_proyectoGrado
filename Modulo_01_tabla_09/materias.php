@@ -1,25 +1,7 @@
-<?php
-session_start();
-if (!isset($_SESSION['nid'])) {
-    header("Location: ../Login/Acceso/login.php");
-    exit();
-}
-
-if (isset($_SESSION['ultimo_acceso'])) {
-  $tiempo_inactivo = time() - $_SESSION['ultimo_acceso']; // Diferencia de tiempo
-
-  if ($tiempo_inactivo > $_SESSION['duracion_sesion']) {
-      session_unset();  // Limpiar variables de sesión
-      session_destroy(); // Destruir la sesión
-      header("Location: ../Login/Acceso/login.php?mensaje=sesion_expirada"); // Redirigir con mensaje
-      exit();
-  } else {
-      $_SESSION['ultimo_acceso'] = time(); // Refrescar el tiempo de sesión
-  }
-}
-?>
+<?php include '../assets/php/ultimo_acceso.php'; ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,123 +13,11 @@ if (isset($_SESSION['ultimo_acceso'])) {
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/export-data.js"></script>
   <script src="https://code.highcharts.com/modules/full-screen.js"></script>
-  <script>
-    //logout
-    function cerrarSesion() {
-      // Petición al servidor para cerrar sesión
-      fetch('../Login/Acceso/logout.php', {
-          method: 'POST',
-          credentials: 'include'
-      })
-      .then(response => {
-          if (response.ok) {
-              window.location.href = "../Login/Acceso/logout.php";
-          } else {
-              alert("Error al cerrar sesión");
-          }
-      })
-      .catch(error => console.error('Error:', error));
-    }
-  </script>
 </head>
+
 <body>
 
-<!-- Menú -->
-<div class="top-bar">
-    <button class="menu-btn" id="menu-btn">☰ Menú</button>
-    <button class="logout-btn" id="logout-btn" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
-</div>
-
-
-<!-- Menú -->
-    <div class="menu" id="menu">
-      <!-- Primer opción de menú -->
-      <a href="../tabla_09_Modulo_01/materias.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M3 12h18"></path>
-          <path d="M3 6h18"></path>
-          <path d="M3 18h18"></path>
-        </svg>
-        Visualización de la Deserción
-      </a>
-      <!-- Otras opciones del menú -->
-      <a href="../tabla_13_Modulo_02/resultados.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M12 5v14"></path>
-          <path d="M5 12h14"></path>
-        </svg>
-        Asignaturas y Resultados de Aprendizaje
-      </a>
-      <a href="../tabla_14_Modulo_03/verbos.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Verbos Materias y Areas
-      </a>
-      <a href="../tabla_19_Modulo_04/verbos.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Verbos Asociados a Areas
-      </a>
-
-      <a href="../tabla_21_Modulo_05/factores.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Factores de Acreditación
-      </a>
-
-      <a href="../tabla_27_Modulo_06/index.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Priorización Eisenhower
-      </a>
-
-
-      <a href="../tabla_29_CandidatoAModulo/plan.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Indicadores de Progreso del Plan de Mejoramiento
-      </a>
-
-      <a href="../tabla_34_Modulo_07/proyectos.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Proyectos del Plan de Mejoramiento
-      </a>
-
-
-      <a href="../tabla_37_Modulo_08/mejoramiento.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Resumen Informe de AutoEvaluación
-      </a>
-
-      <a href="../tabla_41_CandidatoAModulo/habilidad_perfil.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Caracteristicas VS Perfil Profesional
-      </a>
-
-      <a href="../tabla_45_Modulo_09/habilidad_perfil.html" class="menu-item">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        Perfiles Vs Habilidades
-      </a>
-    </div>
-
-
-
-
-
-
+  <?php include '../assets/php/menu.php'; ?>
 
   <div class="container">
     <h1>Visualización de Deserción por Materia</h1>
@@ -193,7 +63,7 @@ if (isset($_SESSION['ultimo_acceso'])) {
   </div>
 
   <script src="script.js"></script>
-  <script src="../assets/js/script_menu.js"></script>
+  <script src="/proyectoGrado/assets/js/script_menu.js"></script>
 </body>
-</html>
 
+</html>

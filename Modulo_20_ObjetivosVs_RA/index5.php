@@ -1,32 +1,19 @@
-<?php
-session_start();
-if (!isset($_SESSION['nid'])) {
-    header("Location: ../Login/Acceso/login.php");
-    exit();
-}
-
-if (isset($_SESSION['ultimo_acceso'])) {
-  $tiempo_inactivo = time() - $_SESSION['ultimo_acceso']; // Diferencia de tiempo
-
-  if ($tiempo_inactivo > $_SESSION['duracion_sesion']) {
-      session_unset();  // Limpiar variables de sesión
-      session_destroy(); // Destruir la sesión
-      header("Location: ../Login/Acceso/login.php?mensaje=sesion_expirada"); // Redirigir con mensaje
-      exit();
-  } else {
-      $_SESSION['ultimo_acceso'] = time(); // Refrescar el tiempo de sesión
-  }
-}
-?>
+<?php include '../assets/php/ultimo_acceso.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Objetivos de Programa y Resultados de Aprendizaje</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/css/styles_menu.css">
 </head>
+
 <body>
+
+    <?php include '../assets/php/menu.php'; ?>
+
     <div class="container">
         <h1>Objetivos de Programa y Resultados de Aprendizaje</h1>
         <table id="objectives-table">
@@ -44,16 +31,16 @@ if (isset($_SESSION['ultimo_acceso'])) {
                         <ul>
                             <li>R1: Aplica modelos matemáticos para resolver problemas de ingeniería en soluciones telemáticas, considerando restricciones técnicas y de eficiencia</li>
                             <li>R13: Aplica técnicas matemáticas para analizar datos en el contexto de soluciones telemáticas</li>
-                             <li>R12: Evalúa problemas de complejidad algorítmica para optimizar soluciones en ingeniería telemática.
-</li>
-                              <li>R9: Desarrolla algoritmos para la solución de problemas de ingeniería.
-</li>
-                             
+                            <li>R12: Evalúa problemas de complejidad algorítmica para optimizar soluciones en ingeniería telemática.
+                            </li>
+                            <li>R9: Desarrolla algoritmos para la solución de problemas de ingeniería.
+                            </li>
+
                         </ul>
                     </td>
                 </tr>
-                
-                
+
+
                 <tr class="objective-row" data-id="2">
                     <td>OP2) Desarrollar soluciones de software innovadoras que respondan a las necesidades del entorno, promoviendo la eficiencia, la escalabilidad y la sostenibilidad, a través de la aplicación de principios de ingeniería y buenas prácticas en el ciclo de vida del software.</td>
                 </tr>
@@ -64,12 +51,12 @@ if (isset($_SESSION['ultimo_acceso'])) {
                             <li>R7: Procesa datos para diseñar sistemas con arquitecturas de software</li>
                             <li>R8: Construye sistemas informáticos para satisfacer las necesidades del entorno</li>
                             <li>R20: Diseña sistemas con arquitecturas y patrones de software.
-</li>                            
+                            </li>
                         </ul>
                     </td>
                 </tr>
-                
-                
+
+
                 <tr class="objective-row" data-id="3">
                     <td>OP3) Diseñar arquitecturas telemáticas que integren eficientemente los aspectos técnicos, económicos y sociales, garantizando la escalabilidad y la seguridad de las soluciones implementadas en entornos complejos.</td>
                 </tr>
@@ -79,17 +66,17 @@ if (isset($_SESSION['ultimo_acceso'])) {
                             <li>R3: Diseña sistemas distribuidos con arquitecturas telemáticas, considerando criterios de eficiencia, escalabilidad y seguridad</li>
                             <li>R5: Diseña infraestructura telemática eficiente considerando los aspectos técnicos, económicos y sociales del entorno</li>
                             <li>R20: Diseña sistemas con arquitecturas y patrones de software.
-</li>
+                            </li>
                             <li>R6: Analiza problemas complejos de ingeniería telemática para proponer soluciones efectivas
-</li>
+                            </li>
 
-</ul>
+                        </ul>
                     </td>
                 </tr>
-                
-                
-                
-                
+
+
+
+
                 <!-- Agregar más filas para los otros objetivos y resultados -->
                 <tr class="objective-row" data-id="4">
                     <td>OP4) Analizar y experimentar con datos y procesos telemáticos para generar soluciones innovadoras que respondan a las necesidades del entorno y optimicen la toma de decisiones en el ámbito de la ingeniería.</td>
@@ -98,17 +85,17 @@ if (isset($_SESSION['ultimo_acceso'])) {
                     <td colspan="1">
                         <ul>
                             <li>RA4: Analiza datos a gran escala utilizando experimentación adecuada para obtener conclusiones informadas en ingeniería telemática
-</li>
+                            </li>
                             <li>RA10: Automatiza procesos para mejorar la eficiencia en entornos telemáticos
-</li>
+                            </li>
                             <li>RA12: Evalúa problemas de complejidad algorítmica para optimizar soluciones en ingeniería telemática.
-</li>
+                            </li>
                             <li>RA13: Aplica técnicas matemáticas para analizar datos en el contexto de soluciones telemáticas
-</li>                            
+                            </li>
                         </ul>
                     </td>
                 </tr>
-                
+
 
 
                 <tr class="objective-row" data-id="5">
@@ -118,13 +105,13 @@ if (isset($_SESSION['ultimo_acceso'])) {
                     <td colspan="1">
                         <ul>
                             <li>RA14: Trabaja en equipo en entornos colaborativos con habilidades interpersonales, de una manera ética.
-</li>
+                            </li>
                             <li>RA16: Ejecuta sus actuaciones con responsabilidad ética y profesional en el ámbito de la ingeniería telemática.
-</li>
+                            </li>
                             <li>RA17: Lidera equipos de gestión de proyectos en el contexto de la ingeniería telemática, promoviendo la buena comunicación y la claridad en los objetivos.
-</li>
+                            </li>
                             <li>RA19: Analiza el contexto social considerando elementos de responsabilidad social en la práctica de la ingeniería telemática.
-</li>                            
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -138,13 +125,13 @@ if (isset($_SESSION['ultimo_acceso'])) {
                     <td colspan="1">
                         <ul>
                             <li>RA8: Construye sistemas informáticos para satisfacer las necesidades del entorno
-</li>
+                            </li>
                             <li>RA15: Aplica estrategias de autoaprendizaje continuo para la adquisición y actualización de conocimientos en el ámbito telemático.
-</li>
+                            </li>
                             <li>RA17: Lidera equipos de gestión de proyectos en el contexto de la ingeniería telemática, promoviendo la buena comunicación y la claridad en los objetivos.
-</li>
+                            </li>
                             <li>RA18: Propone proyectos de ingeniería sustentando su viabilidad económica y técnica en el contexto de la ingeniería telemática.
-</li>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -158,23 +145,25 @@ if (isset($_SESSION['ultimo_acceso'])) {
                     <td colspan="1">
                         <ul>
                             <li>RA16: Ejecuta sus actuaciones con responsabilidad ética y profesional en el ámbito de la ingeniería telemática.
-</li>
+                            </li>
                             <li>RA18: Propone proyectos de ingeniería sustentando su viabilidad económica y técnica en el contexto de la ingeniería telemática.
-</li>
+                            </li>
                             <li>RA19: Analiza el contexto social considerando elementos de responsabilidad social en la práctica de la ingeniería telemática.
-</li>
+                            </li>
                         </ul>
                     </td>
                 </tr>
 
-                
-                
-                
-                
+
+
+
+
             </tbody>
         </table>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
+    <script src="/proyectoGrado/assets/js/script_menu.js"></script>
 </body>
+
 </html>

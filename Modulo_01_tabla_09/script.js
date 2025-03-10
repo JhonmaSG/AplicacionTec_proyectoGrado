@@ -1,489 +1,111 @@
-/* eslint-disable */
-// publicapis.dev
-/*
-// Datos simulados
-const chartData = {
-  semesters: ['2020-1', '2020-2', '2021-1', '2021-2'],
-  rates: [15, 20, 10, 5]
-};
-
-// Función para renderizar la gráfica
-function renderChart(data) {
-  Highcharts.chart('chart-container', {
-    chart: {
-      type: 'line'
-    },
-    title: {
-      text: 'Tasa de Reprobación por Semestre'
-    },
-    xAxis: {
-      categories: data.semesters
-    },
-    yAxis: {
-      title: {
-        text: 'Tasa de Reprobación (%)'
-      }
-    },
-    series: [{
-      name: 'Tasa de Reprobación',
-      data: data.rates
-    }],
-    exporting: {
-      enabled: true
+// Evento para activar pantalla completa en la gráfica
+const fullscreenButton = document.getElementById("fullscreen-chart");
+if (fullscreenButton) {
+  fullscreenButton.addEventListener("click", () => {
+    const chart = Highcharts.charts.find(chart => chart && chart.renderTo === graficaContainer);
+    if (chart) {
+      chart.fullscreen.toggle();
     }
   });
 }
 
-// Renderizar gráfica al cargar la página
-renderChart(chartData);
-*/
+// Button up moved
+const btnSubir = document.getElementById("btnSubir");
+window.onscroll = function () {
+  if (document.documentElement.scrollTop > 300) {
+    btnSubir.style.display = "flex";
+  } else {
+    btnSubir.style.display = "none";
+  }
+};
 
-// Fullscreen para la gráfica
-document.getElementById('fullscreen-chart').addEventListener('click', () => {
-  const chart = Highcharts.charts[0];
-  chart.fullscreen.toggle();
+function subirArriba() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Evento para mostrar la gráfica con datos filtrados
+const showChartButton = document.getElementById("show-chart");
+if (showChartButton) {
+  showChartButton.addEventListener("click", () => {
+    filtrarMaterias(); // Se actualizará la gráfica con los datos filtrados
+  });
+}
+showChartButton.addEventListener("click", function () {
+  document.getElementById("chart-container").scrollIntoView({ behavior: "smooth" });
 });
 
-// Evento para mostrar gráfica con datos dinámicos (enlace a filtros)
-document.getElementById('show-chart').addEventListener('click', () => {
-  document.getElementById("grafica-container").scrollIntoView({ behavior: "smooth" });
-  // Lógica para obtener datos filtrados y llamar renderChart
-  renderChart(chartData);
-});
 
 
-
+// Evento para imprimir la tabla
 document.getElementById('print-table').addEventListener('click', () => {
   const printWindow = window.open('', '', 'height=600,width=800');
   const tableHtml = document.getElementById('data-table').outerHTML;
 
   printWindow.document.write(`
-    <html>
-    <head>
-      <title>Tabla de Deserción</title>
-      <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
-      </style>
-    </head>
-    <body>
-      <h1>Tabla de Deserción</h1>
-      ${tableHtml}
-    </body>
-    </html>
+      <html>
+      <head>
+          <title>Tabla de Deserción</title>
+          <style>
+              table { width: 100%; border-collapse: collapse; }
+              th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+          </style>
+      </head>
+      <body>
+          <h1>Tabla de Deserción</h1>
+          ${tableHtml}
+      </body>
+      </html>
   `);
-
   printWindow.document.close();
   printWindow.print();
 });
 
-
-// Datos de ejemplo
-const materias = [
-  { 
-    nombre: "1 - CALCULO DIFERENCIAL", 
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 180, reprobados: 36 },
-      { semestre: "2020-3", inscritos: 149, reprobados: 86 },
-      { semestre: "2021-1", inscritos: 138, reprobados: 53 },
-      { semestre: "2021-3", inscritos: 166, reprobados: 98 },
-      { semestre: "2022-1", inscritos: 176, reprobados: 101 },
-      { semestre: "2022-3", inscritos: 175, reprobados: 118 },
-      { semestre: "2023-1", inscritos: 225, reprobados: 136 },
-      { semestre: "2023-2", inscritos: 26, reprobados: 4 },
-      { semestre: "2023-3", inscritos: 192, reprobados: 178 },
-      { semestre: "2024-1", inscritos: 216, reprobados: 81 },      
-    ]
-  },
-  {
-    nombre: "3 - FISICA I: MECANICA NEWTONIANA",
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 180, reprobados: 36 },
-      { semestre: "2020-3", inscritos: 124, reprobados: 40 },
-      { semestre: "2021-1", inscritos: 133, reprobados: 39 },
-      { semestre: "2021-3", inscritos: 218, reprobados: 48 },
-      { semestre: "2022-1", inscritos: 113, reprobados: 52 },
-      { semestre: "2022-3", inscritos: 86, reprobados: 40 },
-      { semestre: "2023-1", inscritos: 77, reprobados: 16 },
-      { semestre: "2023-3", inscritos: 106, reprobados: 20 },
-      { semestre: "2024-1", inscritos: 120, reprobados: 38 },
-    ]
-  },
-  {
-    nombre: "4 - CATEDRA FRANCISCO JOSE DE CALDAS",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 126, reprobados: 18 },
-      { semestre: "2020-3", inscritos: 135, reprobados: 25 },
-      { semestre: "2021-1", inscritos: 116, reprobados: 24 },
-      { semestre: "2021-3", inscritos: 138, reprobados: 37 },
-      { semestre: "2022-1", inscritos: 129, reprobados: 33 },
-      { semestre: "2022-3", inscritos: 121, reprobados: 37 },
-      { semestre: "2023-1", inscritos: 158, reprobados: 30 },
-      { semestre: "2023-2", inscritos: 2, reprobados: 0 },
-      { semestre: "2023-3", inscritos: 132, reprobados: 37 },
-      { semestre: "2024-1", inscritos: 186, reprobados: 36 },
-    ]
-  },
-  {
-    nombre: "7 - CALCULO INTEGRAL",
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 91, reprobados: 7 },
-      { semestre: "2020-3", inscritos: 142, reprobados: 21 },
-      { semestre: "2021-1", inscritos: 114, reprobados: 30 },
-      { semestre: "2021-3", inscritos: 118, reprobados: 61 },
-      { semestre: "2022-1", inscritos: 110, reprobados: 65 },
-      { semestre: "2022-3", inscritos: 120, reprobados: 58 },
-      { semestre: "2023-1", inscritos: 104, reprobados: 58 },
-      { semestre: "2023-3", inscritos: 166, reprobados: 91 },
-      { semestre: "2024-1", inscritos: 180, reprobados: 95 },
-    ]
-  },
-  {
-    nombre: "8 - HISTORIA Y CULTURA COLOMBIANA",
-    area: "Humanidades - Electiva",
-    datos: [
-      { semestre: "2020-1", inscritos: 1, reprobados: 0 },
-      { semestre: "2020-3", inscritos: 1, reprobados: 0 },
-      { semestre: "2021-1", inscritos: 1, reprobados: 0 },
-      { semestre: "2022-1", inscritos: 3, reprobados: 0 },
-      { semestre: "2022-3", inscritos: 1, reprobados: 0 },
-      { semestre: "2023-3", inscritos: 3, reprobados: 0 },
-      { semestre: "2024-1", inscritos: 5, reprobados: 1 },
-    ]
-  },
-  {
-    nombre: "9 - ALGEBRA LINEAL",
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 171, reprobados: 53 },
-      { semestre: "2020-3", inscritos: 156, reprobados: 49 },
-      { semestre: "2021-1", inscritos: 145, reprobados: 50 },
-      { semestre: "2021-3", inscritos: 158, reprobados: 78 },
-      { semestre: "2022-1", inscritos: 166, reprobados: 79 },
-      { semestre: "2022-3", inscritos: 154, reprobados: 96 },
-      { semestre: "2023-1", inscritos: 211, reprobados: 123 },
-      { semestre: "2023-3", inscritos: 203, reprobados: 90 },
-      { semestre: "2024-1", inscritos: 224, reprobados: 116 },      
-    ]
-  },
-  {
-    nombre: "12 - CATEDRA DEMOCRACIA Y CIUDADANIA",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 122, reprobados: 12 },
-      { semestre: "2020-3", inscritos: 126, reprobados: 27 },
-      { semestre: "2021-1", inscritos: 108, reprobados: 13 },
-      { semestre: "2021-3", inscritos: 134, reprobados: 35 },
-      { semestre: "2022-1", inscritos: 135, reprobados: 27 },
-      { semestre: "2022-3", inscritos: 117, reprobados: 36 },
-      { semestre: "2023-1", inscritos: 161, reprobados: 35 },
-      { semestre: "2023-3", inscritos: 130, reprobados: 28 },
-      { semestre: "2024-1", inscritos: 180, reprobados: 38 },      
-    ]
-  },
-  {
-    nombre: "13 - FISICA II: ELECTROMAGNETISMO",
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 61, reprobados: 1 },
-      { semestre: "2020-3", inscritos: 55, reprobados: 4 },
-      { semestre: "2021-1", inscritos: 82, reprobados: 9 },
-      { semestre: "2021-3", inscritos: 67, reprobados: 16 },
-      { semestre: "2022-1", inscritos: 53, reprobados: 19 },
-      { semestre: "2022-3", inscritos: 62, reprobados: 19 },
-      { semestre: "2023-1", inscritos: 78, reprobados: 17 },
-      { semestre: "2023-3", inscritos: 73, reprobados: 18 },
-      { semestre: "2024-1", inscritos: 72, reprobados: 37 },      
-    ]
-  },
-  {
-    nombre: "1054 - PRODUCCION Y COMPRENSION DE TEXTOS I",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 139, reprobados: 21 },
-      { semestre: "2020-3", inscritos: 133, reprobados: 21 },
-      { semestre: "2021-1", inscritos: 117, reprobados: 30 },
-      { semestre: "2021-3", inscritos: 147, reprobados: 46 },
-      { semestre: "2022-1", inscritos: 137, reprobados: 43 },
-      { semestre: "2022-3", inscritos: 128, reprobados: 31 },
-      { semestre: "2023-1", inscritos: 155, reprobados: 53 },
-      { semestre: "2023-3", inscritos: 151, reprobados: 32 },
-      { semestre: "2024-1", inscritos: 186, reprobados: 33 },      
-    ]
-  },
-  {
-    nombre: "1056 - PRODUCCION Y COMPRENSION DE TEXTOS II",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 105, reprobados: 14 },
-      { semestre: "2020-3", inscritos: 123, reprobados: 17 },
-      { semestre: "2021-1", inscritos: 109, reprobados: 26 },
-      { semestre: "2021-3", inscritos: 98, reprobados: 23 },
-      { semestre: "2022-1", inscritos: 101, reprobados: 27 },
-      { semestre: "2022-3", inscritos: 100, reprobados: 19 },
-      { semestre: "2023-1", inscritos: 99, reprobados: 16 },
-      { semestre: "2023-3", inscritos: 110, reprobados: 19 },
-      { semestre: "2024-1", inscritos: 104, reprobados: 21 },      
-    ]
-  },
-  {
-    nombre: "1060 - CIENCIA TECNOLOGIA Y SOCIEDAD",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 79, reprobados: 6 },
-      { semestre: "2020-3", inscritos: 89, reprobados: 7 },
-      { semestre: "2021-1", inscritos: 106, reprobados: 14 },
-      { semestre: "2021-3", inscritos: 101, reprobados: 25 },
-      { semestre: "2022-1", inscritos: 88, reprobados: 17 },
-      { semestre: "2022-3", inscritos: 81, reprobados: 18 },
-      { semestre: "2023-1", inscritos: 101, reprobados: 15 },
-      { semestre: "2023-3", inscritos: 80, reprobados: 14 },
-      { semestre: "2024-1", inscritos: 86, reprobados: 12 },      
-    ]
-  },
-  {
-    nombre: "1072 - ADMINISTRACION",
-    area: "Económico Administrativa",
-    datos: [
-      { semestre: "2020-1", inscritos: 113, reprobados: 15 },
-      { semestre: "2020-3", inscritos: 123, reprobados: 19 },
-      { semestre: "2021-1", inscritos: 101, reprobados: 23 },
-      { semestre: "2021-3", inscritos: 97, reprobados: 33 },
-      { semestre: "2022-1", inscritos: 100, reprobados: 33 },
-      { semestre: "2022-3", inscritos: 111, reprobados: 18 },
-      { semestre: "2023-1", inscritos: 91, reprobados: 15 },
-      { semestre: "2023-3", inscritos: 126, reprobados: 35 },
-      { semestre: "2024-1", inscritos: 120, reprobados: 35 },      
-    ]
-  },
-  {
-    nombre: "1075 - ETICA Y SOCIEDAD",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 83, reprobados: 1 },
-      { semestre: "2020-3", inscritos: 84, reprobados: 6 },
-      { semestre: "2021-1", inscritos: 83, reprobados: 10 },
-      { semestre: "2021-3", inscritos: 100, reprobados: 14 },
-      { semestre: "2022-1", inscritos: 87, reprobados: 8 },
-      { semestre: "2022-3", inscritos: 61, reprobados: 8 },
-      { semestre: "2023-1", inscritos: 79, reprobados: 9 },
-      { semestre: "2023-3", inscritos: 87, reprobados: 13 },
-      { semestre: "2024-1", inscritos: 77, reprobados: 14 },      
-    ]
-  },
-  {
-    nombre: "1082 - CATEDRA DE CONTEXTO",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 86, reprobados: 1 },
-      { semestre: "2020-3", inscritos: 117, reprobados: 4 },
-      { semestre: "2021-1", inscritos: 104, reprobados: 4 },
-      { semestre: "2021-3", inscritos: 82, reprobados: 6 },
-      { semestre: "2022-1", inscritos: 76, reprobados: 11 },
-      { semestre: "2022-3", inscritos: 86, reprobados: 5 },
-      { semestre: "2023-1", inscritos: 73, reprobados: 8 },
-      { semestre: "2023-3", inscritos: 90, reprobados: 9 },
-      { semestre: "2024-1", inscritos: 82, reprobados: 5 },      
-    ]
-  },
-  {
-    nombre: "1138 - EMPRENDIMIENTO",
-    area: "Económico Administrativa",
-    datos: [
-      { semestre: "2020-1", inscritos: 13, reprobados: 0 },
-      { semestre: "2020-3", inscritos: 17, reprobados: 1 },
-      { semestre: "2021-1", inscritos: 21, reprobados: 2 },
-      { semestre: "2021-3", inscritos: 24, reprobados: 9 },
-      { semestre: "2022-1", inscritos: 25, reprobados: 9 },
-      { semestre: "2022-3", inscritos: 21, reprobados: 7 },
-      { semestre: "2023-1", inscritos: 23, reprobados: 12 },
-      { semestre: "2023-3", inscritos: 16, reprobados: 4 },
-      { semestre: "2024-1", inscritos: 17, reprobados: 8 },      
-    ]
-  },
-  {
-    nombre: "1503 - CONTABILIDAD GENERAL",
-    area: "Económico Administrativa",
-    datos: [
-      { semestre: "2020-1", inscritos: 59, reprobados: 5 },
-      { semestre: "2020-3", inscritos: 57, reprobados: 3 },
-      { semestre: "2021-1", inscritos: 32, reprobados: 7 },
-      { semestre: "2021-3", inscritos: 42, reprobados: 6 },
-      { semestre: "2022-1", inscritos: 37, reprobados: 5 },
-      { semestre: "2022-3", inscritos: 23, reprobados: 4 },
-      { semestre: "2023-1", inscritos: 50, reprobados: 14 },
-      { semestre: "2023-3", inscritos: 38, reprobados: 7 },
-      { semestre: "2024-1", inscritos: 42, reprobados: 13 },      
-    ]
-  },
-  {
-    nombre: "1507 - INTRODUCCION A ALGORITMOS",
-    area: "Profesional Básica",
-    datos: [
-      { semestre: "2020-1", inscritos: 133, reprobados: 38 },
-      { semestre: "2020-3", inscritos: 141, reprobados: 53 },
-      { semestre: "2021-1", inscritos: 145, reprobados: 62 },
-      { semestre: "2021-3", inscritos: 179, reprobados: 94 },
-      { semestre: "2022-1", inscritos: 179, reprobados: 71 },
-      { semestre: "2022-3", inscritos: 147, reprobados: 73 },
-      { semestre: "2023-1", inscritos: 184, reprobados: 84 },
-      { semestre: "2023-3", inscritos: 175, reprobados: 82 },
-      { semestre: "2024-1", inscritos: 219, reprobados: 81 },      
-    ]
-  },
-  {
-    nombre: "1508 - LOGICA MATEMATICA",
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 127, reprobados: 19 },
-      { semestre: "2020-3", inscritos: 134, reprobados: 45 },
-      { semestre: "2021-1", inscritos: 128, reprobados: 34 },
-      { semestre: "2021-3", inscritos: 151, reprobados: 55 },
-      { semestre: "2022-1", inscritos: 146, reprobados: 46 },
-      { semestre: "2022-3", inscritos: 127, reprobados: 51 },
-      { semestre: "2023-1", inscritos: 169, reprobados: 52 },
-      { semestre: "2023-3", inscritos: 148, reprobados: 52 },
-      { semestre: "2024-1", inscritos: 202, reprobados: 41 },      
-    ]
-  },
-  {
-    nombre: "1509 - FUNDAMENTOS DE ORGANIZACION",
-    area: "Económico Administrativa",
-    datos: [
-      { semestre: "2020-1", inscritos: 55, reprobados: 2 },
-      { semestre: "2020-3", inscritos: 49, reprobados: 1 },
-      { semestre: "2021-1", inscritos: 55, reprobados: 7 },
-      { semestre: "2021-3", inscritos: 61, reprobados: 9 },
-      { semestre: "2022-1", inscritos: 47, reprobados: 8 },
-      { semestre: "2022-3", inscritos: 51, reprobados: 5 },
-      { semestre: "2023-1", inscritos: 49, reprobados: 7 },
-      { semestre: "2023-3", inscritos: 46, reprobados: 8 },
-      { semestre: "2024-1", inscritos: 50, reprobados: 8 },      
-    ]
-  },
-  {
-    nombre: "1510 - FUNDAMENTOS DE ECONOMIA",
-    area: "Económico Administrativa",
-    datos: [
-      { semestre: "2020-1", inscritos: 22, reprobados: 1 },
-      { semestre: "2020-3", inscritos: 25, reprobados: 0 },
-      { semestre: "2021-1", inscritos: 25, reprobados: 2 },
-      { semestre: "2021-3", inscritos: 17, reprobados: 4 },
-      { semestre: "2022-1", inscritos: 15, reprobados: 9 },
-      { semestre: "2022-3", inscritos: 16, reprobados: 3 },
-      { semestre: "2023-1", inscritos: 18, reprobados: 3 },
-      { semestre: "2023-3", inscritos: 16, reprobados: 4 },
-      { semestre: "2024-1", inscritos: 14, reprobados: 2 },      
-    ]
-  },
-  {
-    nombre: "1511 - TIC_S EN LAS ORGANIZACIONES",
-    area: "Humanidades",
-    datos: [
-      { semestre: "2020-1", inscritos: 55, reprobados: 4 },
-      { semestre: "2020-3", inscritos: 43, reprobados: 3 },
-      { semestre: "2021-1", inscritos: 56, reprobados: 5 },
-      { semestre: "2021-3", inscritos: 48, reprobados: 12 },
-      { semestre: "2022-1", inscritos: 45, reprobados: 4 },
-      { semestre: "2022-3", inscritos: 61, reprobados: 5 },
-      { semestre: "2023-1", inscritos: 51, reprobados: 7 },
-      { semestre: "2023-3", inscritos: 45, reprobados: 4 },
-      { semestre: "2024-1", inscritos: 37, reprobados: 8 },      
-    ]
-  },
-  {
-    nombre: "1512 - MATEMATICAS ESPECIALES",
-    area: "Ciencias Básicas",
-    datos: [
-      { semestre: "2020-1", inscritos: 17, reprobados: 1 },
-      { semestre: "2020-3", inscritos: 14, reprobados: 0 },
-      { semestre: "2021-1", inscritos: 8, reprobados: 0 },
-      { semestre: "2021-3", inscritos: 18, reprobados: 3 },
-      { semestre: "2022-1", inscritos: 11, reprobados: 5 },
-      { semestre: "2022-3", inscritos: 16, reprobados: 8 },
-      { semestre: "2023-1", inscritos: 16, reprobados: 4 },
-      { semestre: "2023-3", inscritos: 11, reprobados: 3 },
-      { semestre: "2024-1", inscritos: 12, reprobados: 3 },      
-    ]
-  },
-  {
-    nombre: "1513 - ESTRUCTURA DE DATOS",
-    area: "Profesional Básica",
-    datos: [
-      { semestre: "2020-1", inscritos: 102, reprobados: 10 },
-      { semestre: "2020-3", inscritos: 110, reprobados: 24 },
-      { semestre: "2021-1", inscritos: 111, reprobados: 17 },
-      { semestre: "2021-3", inscritos: 179, reprobados: 94 },
-      { semestre: "2022-1", inscritos: 179, reprobados: 71 },
-      { semestre: "2022-3", inscritos: 147, reprobados: 73 },
-      { semestre: "2023-1", inscritos: 184, reprobados: 84 },
-      { semestre: "2023-3", inscritos: 175, reprobados: 82 },
-      { semestre: "2024-1", inscritos: 219, reprobados: 81 },      
-    ]
-  },
-];
-
-// Referencias a los elementos de la página
+// Referencias a los elementos del DOM
 const tableBody = document.getElementById("table-body");
 const areaFilter = document.getElementById("area-filter");
 const searchMateria = document.getElementById("search-materia");
-
-// Función para calcular la tasa de reprobación
-function calcularTasa(inscritos, reprobados) {
-  return ((reprobados / inscritos) * 100).toFixed(2);
-}
-
-// Función para cargar datos en la tabla
-function cargarTabla(materiasFiltradas) {
-  tableBody.innerHTML = ""; // Limpiar tabla
-  materiasFiltradas.forEach((materia) => {
-    materia.datos.forEach((dato) => {
-      const row = `
-        <tr>
-          <td>${materia.nombre}</td>
-          <td>${materia.area}</td>
-          <td>${dato.semestre}</td>
-          <td>${dato.inscritos}</td>
-          <td>${dato.reprobados}</td>
-          <td>${calcularTasa(dato.inscritos, dato.reprobados)}%</td>
-        </tr>`;
-      tableBody.innerHTML += row;
-    });
-  });
-}
-
-// Función para cargar las áreas en el filtro
-function cargarAreas() {
-  const areas = [...new Set(materias.map((materia) => materia.area))];
-  areaFilter.innerHTML = "<option value=''>Todas las áreas</option>";
-  areas.forEach((area) => {
-    areaFilter.innerHTML += `<option value="${area}">${area}</option>`;
-  });
-}
-
 const graficaContainer = document.getElementById("grafica-container");
-// Función para preparar datos de la gráfica desde la tabla
+let materias = [];
+
+
+// Función para preparar datos de la gráfica desde la tabla copia a la que 
+// estaba en el js original de wanumen 
 function generarDatosGrafica(materiasFiltradas) {
   const seriesData = materiasFiltradas.map((materia) => {
     return {
       name: materia.nombre,
       data: materia.datos.map((dato) => ({
-        name: dato.semestre,
-        y: parseFloat(calcularTasa(dato.inscritos, dato.reprobados)),
+        name: dato.periodo,
+        y: parseFloat(dato.tasa_reprobacion),
       })),
     };
   });
 
   return seriesData;
 }
+////////////////////////////////////////////////////////
 
-// Función para actualizar la gráfica
+
+// Función para actualizar la gráfica cada que se hace una busqueda
 function actualizarGrafica(materiasFiltradas) {
   const seriesData = generarDatosGrafica(materiasFiltradas);
+
+  // Filtrar valores inválidos
+  const categorias = [...new Set(seriesData
+    .flatMap(materia => materia.data.map(d => d.name))
+    .filter(name => name !== null && name !== undefined)
+  )].sort();
+
+  //console.log("Categorías del eje X:", categorias);
+
+  // Destruir gráfica anterior si existe
+  if (Highcharts.charts && Highcharts.charts.length > 0) {
+    Highcharts.charts.forEach(chart => {
+      if (chart && chart.renderTo === graficaContainer) {
+        chart.destroy();
+      }
+    });
+  }
 
   Highcharts.chart(graficaContainer, {
     chart: {
@@ -493,7 +115,7 @@ function actualizarGrafica(materiasFiltradas) {
       text: "Comportamiento de la Tasa de Reprobación",
     },
     xAxis: {
-      type: "category",
+      categories: categorias, // Se pasa directamente las categorías
       title: {
         text: "Semestre",
       },
@@ -506,52 +128,278 @@ function actualizarGrafica(materiasFiltradas) {
       max: 100,
     },
     tooltip: {
-      borderRadius: 8,
       pointFormat: "<b>{point.y:.2f}%</b>",
     },
-    series: seriesData,
+    series: seriesData.map(materia => ({
+      name: materia.name,
+      data: materia.data.map(d => ({
+        name: d.name, // Se deja el nombre como está
+        y: d.y
+      }))
+    })),
     exporting: {
       enabled: true,
     },
     credits: {
       enabled: false,
     },
-    plotOptions: {
-      series: {
-        animation: {
-            duration: 2500
-          }
-      }
-    }
-    });
+  });
 }
 
+////////////////////////////////////////////////////////
 
-// Filtrar materias por área y búsqueda
+
+// evento listener para invocar los cambios en tiempo real 
+document.addEventListener("DOMContentLoaded", function () {
+  // Eventos para filtrar cuando cambian los valores del filtro o el campo de búsqueda
+  areaFilter.addEventListener("change", filtrarMaterias);
+  searchMateria.addEventListener("input", filtrarMaterias);
+
+  buscador_materias_datos("nombre-materia", "http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/buscar_materia.php");
+
+  //Modal (abrir, cerrar)
+  let modal = document.getElementById("modal-datos");
+  let btn = document.getElementById("btnAbrir");
+
+  // Función para abrir el modal
+  btn.onclick = function () {
+    modal.style.display = "block";
+  };
+
+  // Función para cerrar el modal al hacer clic en la "X"
+  function cerrarModal() {
+    modal.style.display = "none";
+  }
+
+  // Cerrar al hacer clic fuera del modal
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // Exponer la función cerrarModal para que funcione en el popup.php
+  window.cerrarModal = cerrarModal;
+  // Inicialización de la página
+  cargarAreas();
+  cargarMaterias();
+});
+///////////////////////////////////////////////////////
+
+// filtra las materias por Area y por el search que tenemos 
 function filtrarMaterias() {
-  const areaSeleccionada = areaFilter.value.toLowerCase();
+  const areaSeleccionada = areaFilter.value;
   const textoBusqueda = searchMateria.value.toLowerCase();
 
-  const materiasFiltradas = materias.filter((materia) => {
-    const perteneceArea =
-      areaSeleccionada === "" || materia.area.toLowerCase() === areaSeleccionada;
-    const coincideTexto =
-      textoBusqueda === "" ||
-      materia.nombre.toLowerCase().includes(textoBusqueda);
-    return perteneceArea && coincideTexto;
+  // console.log("Ejecutando filtrarMaterias - Área seleccionada:", areaSeleccionada, "Texto:", textoBusqueda);
+
+  // Si aún no se han cargado las materias, obtenerlas desde la BD
+  if (!materias || materias.length === 0) {
+    fetch("http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/obtener_materias.php")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Error al obtener las materias desde la base de datos");
+        }
+        return response.json();
+      })
+      .then(data => {
+        materias = data; // Guardamos las materias obtenidas
+        aplicarFiltro(materias, areaSeleccionada, textoBusqueda);
+      })
+      .catch(error => console.error("Error cargando las materias:", error));
+  } else {
+    aplicarFiltro(materias, areaSeleccionada, textoBusqueda);
+  }
+}
+////////////////////////////////////////////////////////
+// Función auxiliar para aplicar el filtro y actualizar tabla/gráfica sin este ocurre un error al actualizar las materias 
+function aplicarFiltro(materias, areaSeleccionada, textoBusqueda) {
+
+  // Convertir a número para hacer comparación correcta
+  const areaSeleccionadaNum = areaSeleccionada ? parseInt(areaSeleccionada) : null;
+
+  const materiasFiltradas = materias.filter(materia => {
+    return (
+      (areaSeleccionadaNum === null || materia.id_area_materia == areaSeleccionadaNum) &&
+      (textoBusqueda === "" || materia.nombre.toLowerCase().includes(textoBusqueda.toLowerCase()))
+    );
   });
 
-  cargarTabla(materiasFiltradas);
-  actualizarGrafica(materiasFiltradas); // Sincroniza la gráfica
+  if (materiasFiltradas.length === 0) {
+    tableBody.innerHTML = "<tr><td colspan='6'>No se encontraron resultados</td></tr>";
+  } else {
+    cargarTabla(materiasFiltradas);
+    actualizarGrafica(materiasFiltradas);
+  }
+}
+////////////////////////////////////////////////////////
+
+// Función para cargar materias desde el php  o api xd
+async function cargarMaterias() {
+  try {
+    const response = await fetch("http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/obtener_materias.php");
+    if (!response.ok) throw new Error("Error al obtener las materias");
+    materias = await response.json();
+    cargarTabla(materias);
+    //actualizarGrafica(materias);
+  } catch (error) {
+    console.error("Error cargando materias:", error);
+  }
 }
 
-// Inicialización de la página
-cargarAreas();
-cargarTabla(materias);
-actualizarGrafica(materias); // Inicializa la gráfica
+////////////////////////////////////////////////////////
+// Cargar áreas desde el php
+function cargarAreas() {
+  fetch("http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/obtener_areas.php")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error en la respuesta del servidor");
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data)) {
+        throw new Error("Respuesta inesperada del servidor");
+      }
+
+      const areaFilter = document.getElementById("area-filter");
+      if (!areaFilter) {
+        throw new Error("Elemento 'area-filter' no encontrado en el DOM");
+      }
+
+      areaFilter.innerHTML = '<option value="">Seleccione un área</option>';
+      data.forEach(area => {
+        const option = document.createElement("option");
+        option.value = area.Id_area;
+        option.textContent = area.nombre; // nombre del campo coincida
+        areaFilter.appendChild(option);
+      });
+    })
+    .catch(error => console.error("Error cargando las áreas:", error));
+}
+
+////////////////////////////////////////////////////////
+// Función para cargar datos en la tabla este utiliza el cargar materias 
+function cargarTabla(materiasFiltradas) {
+
+  //console.log("bandera del cargado de materias "+materiasFiltradas);
+
+  tableBody.innerHTML = "";
+  materiasFiltradas.forEach(materia => {
+    materia.datos.forEach(dato => {
+      tableBody.innerHTML += `
+              <tr>
+                  <td>${materia.nombre}</td>
+                  <td>${materia.area}</td>
+                  <td>${materia.semestre || 'N/A'}</td>
+                  <td>${dato.inscritos || '0'}</td>
+                  <td>${dato.reprobados || '0'}</td>
+                  <td>${dato.tasa_reprobacion || '0'}%</td>
+              </tr>`;
+    });
+  });
+}
+////////////////////////////////////////////////////////
 
 // Eventos para filtrar
-areaFilter.addEventListener("change", filtrarMaterias);
+tableBody.addEventListener("change", filtrarMaterias);//tableBody - areaFilter
 searchMateria.addEventListener("input", filtrarMaterias);
 
 
+//funcion para buscar la materia mas rapido en la parte de agregar datos xd
+function buscador_materias_datos(inputId, apiUrl) {
+  const inputElemento = document.getElementById(inputId);
+  const listaSugerencias = document.createElement("div");
+  listaSugerencias.classList.add("dropdown-menu", "show");
+  listaSugerencias.style.display = "none";
+  inputElemento.parentNode.appendChild(listaSugerencias);
+
+  inputElemento.addEventListener("input", function () {
+    const query = this.value.trim();
+
+    if (query.length === 0) {
+      listaSugerencias.style.display = "none";
+      return;
+    }
+
+    fetch(`${apiUrl}?q=${query}`)
+      .then(response => response.json())
+      .then(data => {
+
+        listaSugerencias.innerHTML = "";
+        if (data.length > 0) {
+          listaSugerencias.style.display = "block";
+          data.forEach(materia => {
+            const item = document.createElement("div");
+            item.classList.add("dropdown-item");
+            item.textContent = materia.nombre;
+            item.addEventListener("click", function () {
+              inputElemento.value = materia.nombre;
+              listaSugerencias.style.display = "none";
+            });
+            listaSugerencias.appendChild(item);
+          });
+        } else {
+          listaSugerencias.style.display = "none";
+        }
+      })
+      .catch(error => console.error("Error en la solicitud:", error));
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!inputElemento.contains(e.target) && !listaSugerencias.contains(e.target)) {
+      listaSugerencias.style.display = "none";
+    }
+  });
+}
+////////////////////////////////////////////////////////
+
+$(document).ready(function () {
+  $("#form-datos").submit(function (e) {
+    e.preventDefault();
+    guardarMateria();
+  });
+});
+
+function guardarMateria() {
+  let formData = $("#form-datos").serialize(); // Serializa los datos del formulario
+
+  console.log("Datos enviados:", formData);
+  $.ajax({
+    url: "http://localhost:3000/AplicacionTec_ProyectoDeGrado-Nicolas/Modulo_01_tabla_09/agregar_datos_materia.php",
+    type: "POST",
+    data: $("#form-datos").serialize(),
+    dataType: "json",
+    success: function (response) {
+      if (response.success) {
+        mostrarMensaje("success", response.message);
+        $("#modal-datos").modal("hide"); // Cierra el modal
+        setTimeout(() => location.reload(), 2000); // Recarga después de 1.5s
+      } else {
+        mostrarMensaje("error", response.message);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error(" Error ajax:", status, error); // 🔍 Ver errores AJAX
+      mostrarMensaje("error", "repitio el periodo y el año en una.");
+
+    }
+  });
+}
+
+function mostrarMensaje(tipo, mensaje) {
+  let alertClass = tipo === "success" ? "alert-success" : "alert-danger";
+  let mensajeHtml = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                          ${mensaje}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>`;
+
+  $("#modal-datos .modal-body").prepend(mensajeHtml);
+
+  setTimeout(() => {
+    $(".alert").alert("close");
+  }, 3000);
+}
+// Inicialización de la página
+cargarAreas();
+cargarMaterias();

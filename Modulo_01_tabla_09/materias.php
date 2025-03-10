@@ -8,11 +8,14 @@
   <title>Visualización de Deserción</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="../assets/css/styles_menu.css">
-  <script src="https://code.highcharts.com/highcharts.js"></script>
-  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-  <script src="https://code.highcharts.com/modules/exporting.js"></script>
-  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script src="https://code.highcharts.com/12.1/highcharts.js"></script>
+  <script src="https://code.highcharts.com/12.1/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/12.1/highcharts-more.js"></script>
+
   <script src="https://code.highcharts.com/modules/full-screen.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -34,9 +37,12 @@
 
     <!-- Botones -->
     <div class="actions">
-      <button id="show-chart" class="btn">Mostrar Gráfica</button>
-      <button id="print-table" class="btn">Imprimir Tabla</button>
-      <button id="fullscreen-chart" class="btn">Vista Fullscreen</button>
+      <button id="show-chart" class="btn btn-info">Mostrar Gráfica</button>
+      <button id="print-table" class="btn btn-info">Imprimir Tabla</button>
+      <button id="fullscreen-chart" class="btn btn-info">Vista Fullscreen</button>
+      <button id="btnAbrir" class="btn btn-info">Nuevo Registro</button>
+
+      <?php include 'includes/popup.php'; ?>
     </div>
 
     <!-- Tabla -->
@@ -55,13 +61,15 @@
         <!-- Filas dinámicas -->
       </tbody>
     </table>
+    <!--Paginación-->
+
 
     <!-- Contenedor para la gráfica -->
     <div id="chart-container" class="chart"></div>
     <div id="grafica-container" style="width:100%; height:600px;"></div>
 
+    <button id="btnSubir" onclick="subirArriba()">↑</button>
   </div>
-
   <script src="script.js"></script>
   <script src="/proyectoGrado/assets/js/script_menu.js"></script>
 </body>

@@ -104,8 +104,8 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE PROCEDURE InsertarDatosMateria(
-    IN p_periodo VARCHAR(10),
-    IN p_nombre_materia_d VARCHAR(255), -- Se recibe el nombre de la materia
+    IN p_periodo VARCHAR(6),
+    IN p_nombre_materia_d VARCHAR(100), -- Ajustado a la longitud de la columna en Materia
     IN p_inscritos INT,
     IN p_reprobados INT
 )
@@ -113,20 +113,32 @@ BEGIN
     DECLARE materia_id INT;
     DECLARE existe INT;
 
+    -- Verificar que inscritos y reprobados sean valores válidos
+    IF p_inscritos < 0 OR p_reprobados < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: Los valores de inscritos y reprobados no pueden ser negativos.';
+    END IF;
+
     -- Obtener el ID de la materia
-    SELECT id_materia INTO materia_id 
+    SELECT Id_materia INTO materia_id 
     FROM Materia
     WHERE nombre_materia = p_nombre_materia_d
     LIMIT 1;
 
-    -- if para verificar los datos del seestre en unma materia
+    -- Validar que la materia exista
+    IF materia_id IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: La materia especificada no existe.';
+    END IF;
+
+    -- Verificar si ya existe un registro para el mismo periodo y materia
     SELECT COUNT(*) INTO existe 
     FROM Datos 
     WHERE periodo = p_periodo AND id_materia_d = materia_id;
 
     IF existe > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Error: Ya existe un registro con la misma materia y semestre.';
+        SET MESSAGE_TEXT = 'Error: Ya existe un registro con la misma materia y periodo.';
     ELSE
         -- Insertar los datos en la tabla Datos
         INSERT INTO Datos (periodo, id_materia_d, inscritos, reprobados)
@@ -135,6 +147,7 @@ BEGIN
 END $$
 
 DELIMITER ;
+
 
 -- ---------------------------------------------------------------------------------------------
 -- Vistas ---
@@ -146,13 +159,17 @@ CREATE OR REPLACE VIEW vista_materias_ordenadas AS
 		m.nombre_materia, 
 		a.Nombre AS nombre_area, 
 		m.semestre,
+        c.id_carrera,
+        c.nombre AS nombre_carrera,
         d.periodo,
 		d.inscritos, 
 		d.reprobados,
 		d.tasa_reprobacion
 	FROM Materia m
 	LEFT JOIN Area a ON m.id_area_materia = a.Id_area
+    LEFT JOIN Carrera c ON m.id_carrera = c.id_carrera
 	LEFT JOIN Datos d ON d.id_materia_d = m.Id_materia
+    WHERE d.inscritos > 0
 	ORDER BY 
 		m.Id_materia ASC, 
 		SUBSTRING_INDEX(d.periodo, '-', 1) ASC, 
@@ -321,9 +338,6 @@ INSERT INTO datos (id_materia_d, periodo, inscritos, reprobados) VALUES
 (13, "2021-3", 98, 23),(13, "2022-1", 101, 27),(13, "2022-3", 100, 19),
 (13, "2023-1", 99, 16),(13, "2023-3", 110, 19),(13, "2024-1", 104, 21),
 
-(14, NULL, NULL, NULL),
-(15, NULL, NULL, NULL),
-
 (16, '2020-1', 79, 6),(16, '2020-3', 89, 7),(16, '2021-1', 106, 14),
 (16, '2021-3', 101, 25),(16, '2022-1', 88, 17),(16, '2022-3', 81, 18),
 (16, '2023-1', 101, 15),(16, '2023-3', 80, 14),(16, '2024-1', 86, 12),
@@ -340,15 +354,9 @@ INSERT INTO datos (id_materia_d, periodo, inscritos, reprobados) VALUES
 (19, '2021-3', 61, 9),(19, '2022-1', 47, 8),(19, '2022-3', 51, 5),
 (19, '2023-1', 49, 7),(19, '2023-3', 46, 8),(19, '2024-1', 50, 8),
 
-(20, NULL, NULL, NULL),
-(21, NULL, NULL, NULL),
-(22, NULL, NULL, NULL),
-
 (23, '2020-1', 17, 1),(23, '2020-3', 14, 0),(23, '2021-1', 8, 0),
 (23, '2021-3', 18, 3),(23, '2022-1', 11, 5),(23, '2022-3', 16, 8),
 (23, '2023-1', 16, 4),(23, '2023-3', 11, 3),(23, '2024-1', 12, 3),
-
-(24, NULL, NULL, NULL),
 
 (25, '2020-1', 22, 1),(25, '2020-3', 25, 0),(25, '2021-1', 25, 2),
 (25, '2021-3', 17, 4),(25, '2022-1', 15, 9),(25, '2022-3', 16, 3),
@@ -360,26 +368,4 @@ INSERT INTO datos (id_materia_d, periodo, inscritos, reprobados) VALUES
 
 (27, '2020-1', 83, 1),(27, '2020-3', 84, 6),(27, '2021-1', 83, 10),
 (27, '2021-3', 100, 14),(27, '2022-1', 87, 8),(27, '2022-3', 61, 8),
-(27, '2023-1', 79, 9),(27, '2023-3', 87, 13),(27, '2024-1', 77, 14),
-
-(28, NULL, NULL, NULL),(29, NULL, NULL, NULL),(30, NULL, NULL, NULL),
-(31, NULL, NULL, NULL),(32, NULL, NULL, NULL),(33, NULL, NULL, NULL),
-(34, NULL, NULL, NULL),(35, NULL, NULL, NULL),(36, NULL, NULL, NULL),
-(37, NULL, NULL, NULL),(38, NULL, NULL, NULL),(39, NULL, NULL, NULL),
-(40, NULL, NULL, NULL),(41, NULL, NULL, NULL),(42, NULL, NULL, NULL),
-(43, NULL, NULL, NULL),(44, NULL, NULL, NULL),(45, NULL, NULL, NULL),
-(46, NULL, NULL, NULL),(47, NULL, NULL, NULL),(48, NULL, NULL, NULL),
-(49, NULL, NULL, NULL),(50, NULL, NULL, NULL),(51, NULL, NULL, NULL),
-(52, NULL, NULL, NULL),(53, NULL, NULL, NULL),(54, NULL, NULL, NULL),
-(55, NULL, NULL, NULL),(56, NULL, NULL, NULL),(57, NULL, NULL, NULL),
-(58, NULL, NULL, NULL),(59, NULL, NULL, NULL),(60, NULL, NULL, NULL),
-(61, NULL, NULL, NULL),(62, NULL, NULL, NULL),(63, NULL, NULL, NULL),
-(64, NULL, NULL, NULL),(65, NULL, NULL, NULL),(66, NULL, NULL, NULL),
-(67, NULL, NULL, NULL),(68, NULL, NULL, NULL),(69, NULL, NULL, NULL),
-(70, NULL, NULL, NULL),(71, NULL, NULL, NULL),(72, NULL, NULL, NULL),
-(73, NULL, NULL, NULL),(74, NULL, NULL, NULL),(75, NULL, NULL, NULL),
-(76, NULL, NULL, NULL),(77, NULL, NULL, NULL),(78, NULL, NULL, NULL),
-(79, NULL, NULL, NULL),(80, NULL, NULL, NULL),(81, NULL, NULL, NULL),
-(82, NULL, NULL, NULL),(83, NULL, NULL, NULL),(84, NULL, NULL, NULL),
-(85, NULL, NULL, NULL),(86, NULL, NULL, NULL),(87, NULL, NULL, NULL),
-(88, NULL, NULL, NULL),(89, NULL, NULL, NULL),(90, NULL, NULL, NULL);
+(27, '2023-1', 79, 9),(27, '2023-3', 87, 13),(27, '2024-1', 77, 14);

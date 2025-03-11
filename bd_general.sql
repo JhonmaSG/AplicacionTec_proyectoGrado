@@ -46,7 +46,7 @@ CREATE TABLE Area (
 );
 
 CREATE TABLE Carrera (
-    id_carrera INT AUTO_INCREMENT PRIMARY KEY,
+    Id_carrera INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT
 );
@@ -159,7 +159,7 @@ CREATE OR REPLACE VIEW vista_materias_ordenadas AS
 		m.nombre_materia, 
 		a.Nombre AS nombre_area, 
 		m.semestre,
-        c.id_carrera,
+        c.Id_carrera,
         c.nombre AS nombre_carrera,
         d.periodo,
 		d.inscritos, 
@@ -167,7 +167,7 @@ CREATE OR REPLACE VIEW vista_materias_ordenadas AS
 		d.tasa_reprobacion
 	FROM Materia m
 	LEFT JOIN Area a ON m.id_area_materia = a.Id_area
-    LEFT JOIN Carrera c ON m.id_carrera = c.id_carrera
+    LEFT JOIN Carrera c ON m.id_carrera = c.Id_carrera
 	LEFT JOIN Datos d ON d.id_materia_d = m.Id_materia
     WHERE d.inscritos > 0
 	ORDER BY 

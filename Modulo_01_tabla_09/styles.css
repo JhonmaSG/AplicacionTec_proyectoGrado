@@ -137,3 +137,9 @@ table th {
 .close:hover {
   color: darkred;
 }
+/* Colour btn's graphics dinamics */
+.btn-filtro.active {
+  background-color: #0056b3 !important; /* Color de fondo */
+  color: white !important; /* Color del texto */
+  border: 2px solid #004494 !important; /* Borde más visible */
+}

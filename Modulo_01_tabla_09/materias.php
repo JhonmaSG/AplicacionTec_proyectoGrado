@@ -64,8 +64,8 @@
 
     <!--Btn's Grafica-->
     <div class="text-center d-none mt-3" id="container-btn-grafica">
-      <button id="btnMaterias" id="materias" class="btn btn-primary">Por Materia</button>
-      <button id="btnAreas" id="areas" class="btn btn-info">Por Área</button>
+      <button data-filtro="materias" class="btn btn-primary btn-filtro">Por Materia</button>
+      <button data-filtro="area" class="btn btn-info btn-filtro">Por Área</button>
     </div>
 
     <!-- Contenedor para la gráfica -->

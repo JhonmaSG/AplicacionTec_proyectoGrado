@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Variables GLOBALES
 let state = {
   materias: [],
@@ -13,6 +13,9 @@ const graficaContainer = document.getElementById("grafica-container");
 const btnSubir = document.getElementById("btnSubir");
 
 function inicializarEventosDOM() {
+  // Evento para impresión de tabla
+  document.getElementById('print-table').addEventListener('click', imprimirTabla);
+
   // Evento para activar pantalla completa en la gráfica
   const fullscreenButton = document.getElementById("fullscreen-chart");
   if (fullscreenButton) {
@@ -24,14 +27,6 @@ function inicializarEventosDOM() {
     });
   }
 
-  // Evento para botón subir
-  window.addEventListener("scroll", () => {
-    btnSubir.style.display = document.documentElement.scrollTop > 300 ? "flex" : "none";
-  });
-  
-
-  btnSubir.addEventListener("click", subirArriba);
-
   // Evento para mostrar la gráfica con datos filtrados
   const showChartButton = document.getElementById("show-chart");
   if (showChartButton) {
@@ -42,23 +37,24 @@ function inicializarEventosDOM() {
     });
   }
 
-  // Evento para impresión de tabla
-  document.getElementById('print-table').addEventListener('click', imprimirTabla);
+  // Evento para botón subir
+  window.addEventListener("scroll", () => {
+    btnSubir.style.display = document.documentElement.scrollTop > 300 ? "flex" : "none";
+  });
+
+  btnSubir.addEventListener("click", subirArriba);
 
   // Eventos de filtrado
   searchMateria.addEventListener("input", filtrarMaterias);
   areaFilter.addEventListener("change", filtrarMaterias);
   carreraFilter.addEventListener("change", filtrarMaterias);
 
-  // Eventos de botones de filtro
-  document.getElementById("btnMaterias").addEventListener("click", () => {
-    state.tipoFiltro = 'materias';
-    filtrarMaterias();
-  });
-
-  document.getElementById("btnAreas").addEventListener("click", () => {
-    state.tipoFiltro = 'area';
-    filtrarMaterias();
+  // Eventos de botones dinamicos de filtro Graphics
+  document.querySelectorAll(".btn-filtro").forEach(btn => {
+    btn.addEventListener("click", function () {
+      state.tipoFiltro = this.getAttribute("data-filtro"); // Obtiene el tipo de filtro del atributo data-filtro
+      filtrarMaterias();
+    });
   });
 
   // Modal
@@ -261,13 +257,19 @@ function datosArea(materiasFiltradas) {
   }];
 }
 
-
 /////////////////////////////////////////////////////////////
 // filtra las materias por Area y por el search que tenemos 
 async function filtrarMaterias() {
   const areaSeleccionada = areaFilter.value;
   const carreraSeleccionada = carreraFilter.value;
   const textoBusqueda = searchMateria.value.toLowerCase();
+
+  // Activa/Agrega botónes dinamicos (Por MAteria / Por Área)
+  document.querySelectorAll(".btn-filtro").forEach(btn => {
+    btn.classList.remove("active"); // Quita clase activa de todos los botones
+  });
+  document.querySelector(`[data-filtro="${state.tipoFiltro}"]`).classList.add("active"); // Agrega clase activa al botón seleccionado
+
 
   if (!materias || materias.length === 0) {
     try {

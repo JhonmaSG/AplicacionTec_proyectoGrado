@@ -1,5 +1,11 @@
+:root {
+  --font-size-small: 13px;
+  --font-size-standard: 15px;
+  --font-size-big: 17px
+}
 body {
   font-family: Arial, sans-serif;
+  font-size: var(--font-size-standard);
   margin: 0;
   padding: 0;
   background-color: #f8f9fa;
@@ -14,7 +20,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: auto;
   padding: 30px;
   padding-top: 50px;
@@ -28,6 +34,7 @@ h1 {
 .filters,
 .actions {
   display: flex;
+  font-size: var(--font-size-standard);
   justify-content: space-between;
   margin-bottom: 20px;
 }
@@ -93,6 +100,7 @@ table th {
 /* Contenido del modal */
 .modal-content {
   background-color: white;
+  font-size: var(--font-size-standard);
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;

@@ -63,6 +63,7 @@ document.getElementById('print-table').addEventListener('click', () => {
 // Referencias a los elementos del DOM
 const tableBody = document.getElementById("table-body");
 const areaFilter = document.getElementById("area-filter");
+const carreraFilter = document.getElementById("carrera-filter");
 const searchMateria = document.getElementById("search-materia");
 const graficaContainer = document.getElementById("grafica-container");
 let materias = [];
@@ -77,6 +78,8 @@ function generarDatosGrafica(materiasFiltradas) {
       data: materia.datos.map((dato) => ({
         name: dato.periodo,
         y: parseFloat(dato.tasa_reprobacion),
+        inscritos: parseInt(dato.inscritos),
+        reprobados: parseInt(dato.reprobados)
       })),
     };
   });
@@ -128,13 +131,21 @@ function actualizarGrafica(materiasFiltradas) {
       max: 100,
     },
     tooltip: {
-      pointFormat: "<b>{point.y:.2f}%</b>",
+      formatter: function () {
+        return `<b>${this.series.name}</b><br>
+                <b>Semestre:</b> ${this.point.name}<br>
+                <b>Tasa de Reprobación: ${this.point.y.toFixed(2)}%</b><br>
+                <b>Inscritos:</b> ${this.point.inscritos}<br>
+                <b>Reprobados:</b> ${this.point.reprobados}`;
+      }
     },
     series: seriesData.map(materia => ({
       name: materia.name,
       data: materia.data.map(d => ({
-        name: d.name, // Se deja el nombre como está
-        y: d.y
+        name: d.name,
+        y: d.y,
+        inscritos: d.inscritos,
+        reprobados: d.reprobados
       }))
     })),
     exporting: {
@@ -153,6 +164,7 @@ function actualizarGrafica(materiasFiltradas) {
 document.addEventListener("DOMContentLoaded", function () {
   // Eventos para filtrar cuando cambian los valores del filtro o el campo de búsqueda
   areaFilter.addEventListener("change", filtrarMaterias);
+  carreraFilter.addEventListener("change", filtrarMaterias);
   searchMateria.addEventListener("input", filtrarMaterias);
 
   buscador_materias_datos("nombre-materia", "http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/buscar_materia.php");
@@ -161,10 +173,11 @@ document.addEventListener("DOMContentLoaded", function () {
   let modal = document.getElementById("modal-datos");
   let btn = document.getElementById("btnAbrir");
 
+  /*
   // Función para abrir el modal
   btn.onclick = function () {
     modal.style.display = "block";
-  };
+  };*/
 
   // Función para cerrar el modal al hacer clic en la "X"
   function cerrarModal() {
@@ -182,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.cerrarModal = cerrarModal;
   // Inicialización de la página
   cargarAreas();
+  cargarCarreras();
   cargarMaterias();
 });
 ///////////////////////////////////////////////////////
@@ -189,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // filtra las materias por Area y por el search que tenemos 
 function filtrarMaterias() {
   const areaSeleccionada = areaFilter.value;
+  const carreraSeleccionada = carreraFilter.value;
   const textoBusqueda = searchMateria.value.toLowerCase();
 
   // console.log("Ejecutando filtrarMaterias - Área seleccionada:", areaSeleccionada, "Texto:", textoBusqueda);
@@ -204,23 +219,25 @@ function filtrarMaterias() {
       })
       .then(data => {
         materias = data; // Guardamos las materias obtenidas
-        aplicarFiltro(materias, areaSeleccionada, textoBusqueda);
+        aplicarFiltro(materias, areaSeleccionada, carreraSeleccionada, textoBusqueda);
       })
       .catch(error => console.error("Error cargando las materias:", error));
   } else {
-    aplicarFiltro(materias, areaSeleccionada, textoBusqueda);
+    aplicarFiltro(materias, areaSeleccionada, carreraSeleccionada, textoBusqueda);
   }
 }
 ////////////////////////////////////////////////////////
 // Función auxiliar para aplicar el filtro y actualizar tabla/gráfica sin este ocurre un error al actualizar las materias 
-function aplicarFiltro(materias, areaSeleccionada, textoBusqueda) {
+function aplicarFiltro(materias, areaSeleccionada, carreraSeleccionada, textoBusqueda) {
 
   // Convertir a número para hacer comparación correcta
   const areaSeleccionadaNum = areaSeleccionada ? parseInt(areaSeleccionada) : null;
+  const carreraSeleccionadaNum = carreraSeleccionada ? parseInt(carreraSeleccionada) : null;
 
   const materiasFiltradas = materias.filter(materia => {
     return (
       (areaSeleccionadaNum === null || materia.id_area_materia == areaSeleccionadaNum) &&
+      (carreraSeleccionadaNum === null || materia.id_carrera == carreraSeleccionadaNum) &&
       (textoBusqueda === "" || materia.nombre.toLowerCase().includes(textoBusqueda.toLowerCase()))
     );
   });
@@ -278,6 +295,35 @@ function cargarAreas() {
     .catch(error => console.error("Error cargando las áreas:", error));
 }
 
+function cargarCarreras()
+{
+  fetch("http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/obtener_carreras.php")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error en la respuesta del servidor");
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data)) {
+        throw new Error("Respuesta inesperada del servidor");
+      }
+
+      const carreraFilter = document.getElementById("carrera-filter");
+      if (!carreraFilter) {
+        throw new Error("Elemento 'carrera-filter' no encontrado en el DOM");
+      }
+
+      carreraFilter.innerHTML = '<option value="">TSD/IT</option>';
+      data.forEach(carrera => {
+        const option = document.createElement("option");
+        option.value = carrera.id_carrera;
+        option.textContent = carrera.nombre; // nombre del campo coincida
+        carreraFilter.appendChild(option);
+      });
+    })
+    .catch(error => console.error("Error cargando las Carreras:", error));
+}
 ////////////////////////////////////////////////////////
 // Función para cargar datos en la tabla este utiliza el cargar materias 
 function cargarTabla(materiasFiltradas) {
@@ -364,9 +410,8 @@ $(document).ready(function () {
 function guardarMateria() {
   let formData = $("#form-datos").serialize(); // Serializa los datos del formulario
 
-  console.log("Datos enviados:", formData);
   $.ajax({
-    url: "http://localhost:3000/AplicacionTec_ProyectoDeGrado-Nicolas/Modulo_01_tabla_09/agregar_datos_materia.php",
+    url: "http://localhost/proyectoGrado/Modulo_01_tabla_09/includes/agregar_datos_materia.php",
     type: "POST",
     data: $("#form-datos").serialize(),
     dataType: "json",
@@ -380,8 +425,8 @@ function guardarMateria() {
       }
     },
     error: function (xhr, status, error) {
-      console.error(" Error ajax:", status, error); // 🔍 Ver errores AJAX
-      mostrarMensaje("error", "repitio el periodo y el año en una.");
+      //console.error(" Error ajax:", status, error); // 🔍 Ver errores AJAX
+      mostrarMensaje("error", "Escriba datos validos");
 
     }
   });
@@ -402,4 +447,5 @@ function mostrarMensaje(tipo, mensaje) {
 }
 // Inicialización de la página
 cargarAreas();
+cargarCarreras();
 cargarMaterias();

@@ -1,6 +1,6 @@
 <!-- Botón para abrir el modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-datos">
-    Agregar Materia
+    Agregar Registro
 </button>
 <!-- Modal -->
 <div class="modal fade" id="modal-datos" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">

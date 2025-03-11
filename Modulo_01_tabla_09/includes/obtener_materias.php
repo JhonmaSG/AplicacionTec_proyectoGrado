@@ -18,6 +18,7 @@ while ($row = $result->fetch_assoc()) {
             "nombre" => $row['nombre_materia'],
             "area" => $row['nombre_area'],
             "semestre" => $row['semestre'],
+            "id_carrera" => $row['id_carrera'],
             "id_area_materia" => $row['id_area_materia'],
             "datos" => []
         ];

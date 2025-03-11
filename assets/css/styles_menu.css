@@ -1,6 +1,12 @@
 /* Estilos generales */
+:root {
+  --font-size-small: 13px;
+  --font-size-standard: 15px;
+  --font-size-big: 17px
+}
 body {
   font-family: Arial, sans-serif;
+  font-size: var(--font-size-standard);
   margin: 0;
   padding: 0;
   background-color: #f4f4f4;
@@ -28,6 +34,7 @@ body {
 
 .menu-btn {
   background-color: #90ee90; /* Verde claro */
+  font-size: var(--font-size-standard);
   border: none;
   cursor: pointer;
   border-radius: 5px;
@@ -37,6 +44,7 @@ body {
 
 .logout-btn {
   background-color: #ff6666; /* Rojo claro */
+  font-size: var(--font-size-standard);
   border: none;
   cursor: pointer;
   border-radius: 5px;
@@ -80,6 +88,7 @@ body {
   margin-right: 10px;
   width: 20px;
   height: 20px;
+  flex-shrink: 0; /*Tamaño fijo icons/items*/
 }
 
 /* Menú visible cuando se activa */
@@ -104,7 +113,7 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }
 
 #btnSubir:hover {

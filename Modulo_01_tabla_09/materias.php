@@ -27,9 +27,10 @@
     <!-- Filtros -->
     <div class="filters">
       <label for="area-filter">Filtrar por área:</label>
-      <select id="area-filter">
-        <!-- Opciones dinámicas -->
-      </select>
+      <select id="area-filter"><!-- Opciones dinámicas --></select>
+
+      <label for="carrera-filter">Filtrar por Carrera:</label>
+      <select id="carrera-filter"><!-- Opciones dinámicas --></select>
 
       <label for="search-materia">Buscar materia:</label>
       <input type="text" id="search-materia" placeholder="Nombre de la materia">
@@ -40,7 +41,6 @@
       <button id="show-chart" class="btn btn-info">Mostrar Gráfica</button>
       <button id="print-table" class="btn btn-info">Imprimir Tabla</button>
       <button id="fullscreen-chart" class="btn btn-info">Vista Fullscreen</button>
-      <button id="btnAbrir" class="btn btn-info">Nuevo Registro</button>
 
       <?php include 'includes/popup.php'; ?>
     </div>
@@ -66,7 +66,7 @@
 
     <!-- Contenedor para la gráfica -->
     <div id="chart-container" class="chart"></div>
-    <div id="grafica-container" style="width:100%; height:600px;"></div>
+    <div id="grafica-container" style="width:100%; height:700px;"></div>
 
     <button id="btnSubir" onclick="subirArriba()">↑</button>
   </div>

@@ -13,8 +13,8 @@
   <script src="https://code.highcharts.com/12.1/highcharts.js"></script>
   <script src="https://code.highcharts.com/12.1/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/12.1/highcharts-more.js"></script>
-
   <script src="https://code.highcharts.com/modules/full-screen.js"></script>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -60,13 +60,17 @@
       <tbody id="table-body">
         <!-- Filas dinámicas -->
       </tbody>
-    </table>
-    <!--Paginación-->
+    </table><br>
 
+    <!--Btn's Grafica-->
+    <div class="text-center d-none mt-3" id="container-btn-grafica">
+      <button id="btnMaterias" id="materias" class="btn btn-primary">Por Materia</button>
+      <button id="btnAreas" id="areas" class="btn btn-info">Por Área</button>
+    </div>
 
     <!-- Contenedor para la gráfica -->
     <div id="chart-container" class="chart"></div>
-    <div id="grafica-container" style="width:100%; height:700px;"></div>
+    <div id="grafica-container"></div>
 
     <button id="btnSubir" onclick="subirArriba()">↑</button>
   </div>

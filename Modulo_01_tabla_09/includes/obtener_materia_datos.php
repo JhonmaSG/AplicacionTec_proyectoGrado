@@ -1,13 +1,14 @@
 <?php
 include '../../Login/ConfiguracionBD/ConexionBD.php';
 
-
 // Consulta para obtener las materias con sus datos
 $query = "SELECT * FROM vista_materias_ordenadas";
 
 $result = $conn->query($query);
 
 $materias = [];
+$areas = [];
+$semestres = [];
 
 while ($row = $result->fetch_assoc()) {
     $id_materia = $row['Id_materia'];
@@ -18,12 +19,11 @@ while ($row = $result->fetch_assoc()) {
             "nombre" => $row['nombre_materia'],
             "area" => $row['nombre_area'],
             "semestre" => $row['semestre'],
-            "id_carrera" => $row['id_carrera'],
+            "id_carrera" => $row['Id_carrera'],
             "id_area_materia" => $row['id_area_materia'],
             "datos" => []
         ];
     }
-
 
     $materias[$id_materia]["datos"][] = [
         "periodo" => $row['periodo'],
@@ -34,5 +34,4 @@ while ($row = $result->fetch_assoc()) {
 }
 
 $conn->close();
-
 echo json_encode(array_values($materias), JSON_UNESCAPED_UNICODE);

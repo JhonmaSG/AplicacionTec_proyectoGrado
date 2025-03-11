@@ -6,17 +6,19 @@ unset($_SESSION['mensaje']); // Limpiar el mensaje después de mostrarlo
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Proyecto Grado</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="d-flex align-items-center justify-content-center vh-100 bg-light">
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="card shadow-lg">
                     <div class="card-header text-center">
                         <h3>Iniciar Sesión</h3>
@@ -55,5 +57,5 @@ unset($_SESSION['mensaje']); // Limpiar el mensaje después de mostrarlo
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
 
+</html>

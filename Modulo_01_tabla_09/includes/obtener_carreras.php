@@ -7,7 +7,7 @@ header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
 // Consulta obtener todas las carreras
-$query = "SELECT id_carrera, nombre FROM Carrera";
+$query = "SELECT Id_carrera, nombre FROM Carrera";
 $result = $conn->query($query);
 
 $carreras = [];

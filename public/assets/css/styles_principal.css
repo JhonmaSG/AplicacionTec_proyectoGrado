@@ -1,0 +1,87 @@
+.container {
+  max-width: 1280px;
+  margin: 80px auto 0 auto;
+  padding: 50px 30px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+
+  height: auto;
+  overflow: visible;
+}
+
+.intro-text {
+  font-size: 1.1rem;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #444;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* << este es el truco */
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 40px;
+  justify-items: center;
+}
+
+.dashboard-card {
+  width: 100%;
+  max-width: 250px;
+  max-height: 210px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  color: #333;
+  text-decoration: none;
+  display: block;
+}
+
+.dashboard-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card h3 {
+  color: #007bff;
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 20px 10px 0 10px;
+    padding: 20px 15px;
+  }
+
+  .intro-text {
+    font-size: 1rem;
+    padding: 0 5px;
+  }
+
+  .dashboard-grid h3{
+    font-size: 14px;
+  }
+
+  .dashboard-card {
+    max-width: 100%;
+    padding: 15px;  
+  }
+
+  .dashboard-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .dashboard-card p {
+    font-size: 0.95rem;
+  }
+
+  h1, h2 {
+    font-size: 1.3rem;
+  }
+}

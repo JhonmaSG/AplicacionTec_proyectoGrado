@@ -1,0 +1,703 @@
+/////////////////////////////////////////////////////////////////////
+import { subirArriba, desplazamientoGrafica } from '/proyectoGrado/public/assets/js/desplazamiento.js';
+// Variables GLOBALES
+let state = {
+  materias: [],
+  tipoFiltro: 'materias'
+};
+let materias = [];
+
+// Inicializar Eventos DOM
+const tableBody = document.getElementById("table-body");
+const areaFilter = document.getElementById('area-filter');
+const verbFilter = document.getElementById('verb-filter');
+const multiAreaFilter = document.getElementById('multi-area-filter');
+const verbDescription = document.getElementById('verb-description');
+const graficaContainer = document.getElementById("grafica-container");
+const btnSubir = document.getElementById("btnSubir");
+if (btnSubir) {
+  btnSubir.addEventListener('click', subirArriba);
+}
+
+
+function inicializarEventosDOM() {
+  // Evento para activar pantalla completa en la gráfica
+  const fullscreenButton = document.getElementById("fullscreen-chart");
+  if (fullscreenButton) {
+    fullscreenButton.addEventListener("click", () => {
+      const chart = Highcharts.charts.find(chart => chart && chart.renderTo === graficaContainer);
+      if (chart) {
+        chart.fullscreen.toggle();
+      }
+    });
+  }
+
+  // Evento para mostrar la gráfica con datos filtrados
+  const showChartButton = document.getElementById("show-chart");
+  if (showChartButton) {
+    showChartButton.addEventListener("click", () => {
+      state.tipoFiltro = 'materias';
+      filtrarMaterias();
+      graficaContainer.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  // Eventos de botones dinamicos de filtro Graphics
+  document.querySelectorAll(".btn-filtro").forEach(btn => {
+    btn.addEventListener("click", function () {
+      state.tipoFiltro = this.getAttribute("data-filtro"); // Obtiene tipo de filtro del atributo data-filtro
+      filtrarMaterias();
+    });
+  });
+
+  areaFilter.addEventListener("change", filtrarMaterias);
+  verbFilter.addEventListener("change", filtrarMaterias);
+
+  //Evento para filtrar materias en el apartado de los datos
+  buscador_materias_datos("nombre-materia", "http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/buscar_materia.php");
+
+  // Cargar áreas, verbos y materias
+  cargarAreas();
+  cargarVerbos("verb-filter_popup");
+  cargarVerbos("verb-filter");
+
+  cargarMateriaVerbo();
+
+  // Modal
+  configurarModal();
+}
+
+
+// 
+document.addEventListener("DOMContentLoaded", inicializarEventosDOM);
+
+function configurarModal() {
+  let modal = document.getElementById("modal-datos");
+  let btn = document.getElementById("btnAbrir");
+  function cerrarModal() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      cerrarModal();
+    }
+  };
+}
+///////////////////////////////////////////////////////////////////
+// Función para preparar datos de la gráfica desde la tabla
+function generarDatosGrafica(materiasFiltradas) {
+  return materiasFiltradas.map(materia => ({
+    name: materia.nombre,
+    y: materia.verbos.length
+  }));
+}
+
+function datosArea(materiasFiltradas) {
+  const areaVerbosUnicos = {};
+
+  materiasFiltradas.forEach(materia => {
+    const area = materia.area;
+
+    if (!areaVerbosUnicos[area]) {
+      areaVerbosUnicos[area] = new Set();
+    }
+
+    let verbosMateria = materia.verbos;
+
+    // Si los verbos vienen como string separados por comas
+    if (typeof verbosMateria === 'string') {
+      verbosMateria = verbosMateria.split(',').map(v => v.trim().toLowerCase());
+    } else if (Array.isArray(verbosMateria)) {
+      verbosMateria = verbosMateria.map(v => {
+        if (typeof v === 'string') {
+          return v.trim().toLowerCase();
+        } else if (v.nombre) {
+          return v.nombre.trim().toLowerCase();
+        }
+        return v; // fallback
+      });
+    }
+
+    verbosMateria.forEach(verbo => {
+      areaVerbosUnicos[area].add(verbo);
+    });
+  });
+
+  return Object.keys(areaVerbosUnicos).map(area => ({
+    name: area,
+    y: areaVerbosUnicos[area].size
+  }));
+}
+
+// Función para actualizar la gráfica cada que hay petición
+function actualizarGrafica(materiasFiltradas) {
+  let tipoChart = 'bar';
+  let tituloX = '';
+  let tituloY = 'Cantidad de Verbos';
+  let categorias = [];
+  let series = [];
+
+  switch (state.tipoFiltro) {
+    case 'materias':
+      tituloX = 'Materias';
+      const datosMaterias = generarDatosGrafica(materiasFiltradas);
+      categorias = datosMaterias.map(d => d.name);
+      series = [{
+        name: 'Verbos por Materia',
+        data: datosMaterias.map(d => d.y)
+      }];
+      break;
+    case 'areas':
+      tituloX = 'Áreas';
+      const datosAreas = datosArea(materiasFiltradas);
+      categorias = datosAreas.map(d => d.name);
+      series = [{
+        name: 'Verbos por Área',
+        data: datosAreas.map(d => d.y)
+      }];
+      break;
+  }
+
+  // Tooltip dinámico según tipo de filtro
+  let tooltipConfig = state.tipoFiltro === 'materias' ? {
+    formatter: function () {
+      return `<b>${this.series.name}</b><br>
+              <b>${tituloX}:</b> ${this.point.name}<br>
+              <b>Cantidad de Verbos x Materia: ${this.point.y.toFixed(2)}%</b><br>`;
+    }
+  } : {
+    formatter: function () {
+      return `<b>${this.series.name}</b><br>
+              <b>${tituloX}:</b> ${this.point.name}<br>
+              <b>Cantidad de Verbos x Área: ${this.point.y.toFixed(2)}%</b><br>`;
+    }
+  };
+
+  // Destruir gráfica anterior si existe
+  if (Highcharts.charts && Highcharts.charts.length > 0) {
+    Highcharts.charts.forEach(chart => {
+      if (chart && chart.renderTo === graficaContainer) {
+        chart.destroy();
+      }
+    });
+  }
+
+  Highcharts.chart(graficaContainer, {
+    chart: { type: tipoChart },
+    title: { text: 'Cantidad de Verbos por ' + (state.tipoFiltro === 'materias' ? 'Materia' : 'Áreas') },
+    xAxis: {
+      categories: categorias,
+      title: { text: tituloX }
+    },
+    yAxis: {
+      min: 0,
+      allowDecimals: false,
+      title: { text: tituloY }
+    },
+    tooltip: {
+      pointFormat: '<b>{point.y}</b> verbos'
+    },
+    series: series,
+    exporting: { enabled: true },
+    credits: { enabled: false }
+  });
+}
+///////////////////////////////////////////////////////////////////
+// filtra las materias por Area y por el search que tenemos 
+async function filtrarMaterias() {
+  const areaSeleccionada = areaFilter.value;
+  const verbSeleccionado = verbFilter.value;
+  //console.error("Error  las verbos:", verbFilter);
+
+  // Activa/Agrega botónes dinamicos (Por Materia / Por Área)
+  document.querySelectorAll(".btn-filtro").forEach(btn => {
+    btn.classList.remove("active"); // Quita clase activa de todos los botones
+  });
+  // Agrega clase activa al botón seleccionado
+  document.querySelector(`[data-filtro="${state.tipoFiltro}"]`).classList.add("active");
+
+  if (!materias || materias.length === 0) {
+    try {
+      const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_materia_verbo.php");
+      if (!response.ok) {
+        throw new Error("Error al obtener las materias desde la base de datos");
+      }
+      materias = await response.json();
+      aplicarFiltro(materias, areaSeleccionada, verbSeleccionado);
+    } catch (error) {
+      console.error("Error cargando las verbos de obtener verbos:", error);
+    }
+  } else {
+    aplicarFiltro(materias, areaSeleccionada, verbSeleccionado);
+  }
+  desplazamientoGrafica();
+}
+
+
+// Función para filtrar materias por área, verbo y búsqueda
+function aplicarFiltro(materias, areaFilter, verbFilter) {
+  // Convertir a número para hacer comparación correcta
+  const areaSeleccionadaNum = areaFilter ? parseInt(areaFilter.value) : null;
+  const verbSeleccionadoNum = verbFilter ? parseInt(verbFilter.value) : null;
+
+  const materiasFiltradas = materias.filter(materia => {
+    return (
+      (areaSeleccionadaNum === null || materia.id_area == areaSeleccionadaNum) &&
+      (verbSeleccionadoNum === null || materia.id_verbo == verbSeleccionadoNum)
+    );
+  });
+
+  if (materiasFiltradas.length === 0) {
+    tableBody.innerHTML = "<tr><td colspan='6'>No se encontraron resultados</td></tr>";
+  } else {
+    cargarTabla(materiasFiltradas);
+    actualizarGrafica(materiasFiltradas);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+// Función para cargar materias desde el PHP/API
+async function cargarMateriaVerbo() {
+  try {
+    const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_materia_verbo.php");
+    if (!response.ok) throw new Error("Error al obtener las materias");
+
+    const materias = await response.json(); // Declaramos materias correctamente
+    cargarTabla(materias);
+  } catch (error) {
+    console.error("Error cargando materias:", error);
+  }
+}
+
+// Cargar áreas desde PHP
+async function cargarAreas() {
+  try {
+    const response = await fetch("http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/obtener_areas.php");
+    if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+    const data = await response.json();
+    if (!Array.isArray(data)) throw new Error("Respuesta inesperada del servidor");
+
+    areaFilter.innerHTML = '<option value="">Seleccione un área</option>';
+    data.forEach(area => {
+      const option = document.createElement("option");
+      option.value = area.Id_area;
+      option.textContent = area.nombre;
+      areaFilter.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error cargando las áreas:", error);
+  }
+}
+
+// Función para cargar verbos desde el PHP/API
+async function cargarVerbos(id_select) {
+  try {
+    const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_verbos.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({})
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error en la solicitud: ${response.status} ${response.statusText}`);
+    }
+
+    const text = await response.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (jsonError) {
+      throw new Error(" Error parseando JSON: " + jsonError.message);
+    }
+
+    if (!Array.isArray(data)) {
+      throw new Error(" La respuesta no es un array válido");
+    }
+
+    const selectElement = document.getElementById(id_select);
+    if (!selectElement) {
+      throw new Error(` No se encontró el elemento con ID: ${id_select}`);
+    }
+
+    selectElement.innerHTML = '<option value="">Seleccione un verbo</option>';
+
+    data.forEach(verb => {
+      const option = document.createElement("option");
+      option.value = verb.Id_verbo;
+      option.textContent = verb.nombre;
+      selectElement.appendChild(option);
+    });
+
+    // Guardar el ID del verbo seleccionado en un campo oculto
+    selectElement.addEventListener("change", function () {
+      document.getElementById("verbo_id").value = this.value; // Guarda el ID
+    });
+
+  } catch (error) {
+    console.error(" Error en la función de cargar los Verbos:", error);
+  }
+}
+///////////////////////////////////////////////////////////////////////////////////
+// Función para cargar datos en la tabla
+function cargarTabla(materiasFiltradas) {
+  if (!tableBody) {
+    console.error("El elemento 'table-body' no se encuentra en el DOM.");
+    return;
+  }
+
+  tableBody.innerHTML = ""; // Limpiar la tabla antes de insertar nuevos datos
+
+  materiasFiltradas.forEach(materia => {
+
+    tableBody.innerHTML += `
+        <tr>
+            <td>${materia.nombre}</td>
+            <td>${materia.creditos}</td>
+            <td>${materia.verbos}</td>
+            <td>${materia.area || 'N/A'}</td>
+            <td>
+              <button 
+                type="button" 
+                class="btn btn-primary btn-actualizar" 
+                data-nombre="${materia.nombre}" 
+                data-bs-toggle="modal" 
+                data-bs-target="#modal-datos">
+                Actualizar
+              </button>
+            </td>
+        </tr>`;
+
+  });
+}
+////////////////////////////////////////////////////////////////////////////////
+//  Funcion para buscar la materia mas rapido en la parte de agregar datos
+async function buscador_materias_datos(inputId, apiUrl) {
+  const inputElemento = document.getElementById(inputId);
+  const listaSugerencias = document.createElement("div");
+  listaSugerencias.classList.add("dropdown-menu", "show");
+  listaSugerencias.style.display = "none";
+  inputElemento.parentNode.appendChild(listaSugerencias);
+
+  inputElemento.addEventListener("input", async function () {
+    const query = this.value.trim();
+    if (query.length === 0) {
+      listaSugerencias.style.display = "none";
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}?q=${query}`);
+      const data = await response.json();
+
+      listaSugerencias.innerHTML = "";
+      if (data.length > 0) {
+        listaSugerencias.style.display = "block";
+        data.forEach(materia => {
+          const item = document.createElement("div");
+          item.classList.add("dropdown-item");
+          item.textContent = materia.nombre;
+          item.addEventListener("click", function () {
+            inputElemento.value = materia.nombre;
+            listaSugerencias.style.display = "none";
+          });
+          listaSugerencias.appendChild(item);
+        });
+      } else {
+        listaSugerencias.style.display = "none";
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!inputElemento.contains(e.target) && !listaSugerencias.contains(e.target)) {
+      listaSugerencias.style.display = "none";
+    }
+  });
+}
+//////////////////////////////////////////////////////////////////////////////
+// Función para mostrarMensajes
+function mostrarMensaje(tipo, mensaje) {
+  let alertClass = tipo === "success" ? "alert-success" : "alert-danger";
+  let mensajeHtml = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                          ${mensaje}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>`;
+
+  $("#modal-datos .modal-body .alert").remove();
+
+  $("#modal-datos .modal-body").prepend(mensajeHtml);
+
+  // Cerrar automáticamente mensaje en 2 segundos
+  setTimeout(() => {
+    $(".alert").alert("close");
+  }, 3000);
+}
+
+var verbosSeleccionados = []; // IDs de verbos seleccionados
+var nombresVerbos = []; // Nombres de verbos seleccionados
+var verboEliminado = false;
+
+// Función para actualizar la lista de verbos seleccionados
+function actualizarListaVerbos() {
+  var lista = $("#verbos-seleccionados");
+  lista.empty(); // Limpiar la lista antes de actualizarla
+
+  nombresVerbos.forEach(function (verbo, index) {
+    lista.append(`
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${verbo} 
+                <button type="button" class="btn btn-sm btn-danger eliminar-verbo" data-id="${verbosSeleccionados[index]}">X</button>
+            </li>
+        `);
+  });
+
+  // Si se eliminó un verbo, actualiza la interfaz inmediatamente
+  if (verboEliminado) {
+    verboEliminado = false; // Reset variable
+  }
+
+  toggleBotonGuardar();
+}
+
+function toggleBotonGuardar() {
+  if (verbosSeleccionados.length === 0) {
+    $("#btn-guardar").prop("disabled", true);
+  } else {
+    $("#btn-guardar").prop("disabled", false);
+  }
+}
+
+$("#btn-atras").click(function () {
+  location.reload();
+});
+//////////////////////////////////////////////////////////////////////////////
+// Eliminan verbos de la lista
+$(document).ready(function () {
+
+  // Eliminan verbos seleccionados de la lista
+  $(document).on("click", ".eliminar-verbo", function () {
+    var verboId = $(this).data("id").toString();
+
+    // Buscar el índice del verbo a eliminar
+    var index = verbosSeleccionados.indexOf(verboId);
+    if (index !== -1) {
+      verbosSeleccionados.splice(index, 1);
+      nombresVerbos.splice(index, 1);
+    }
+
+    verboEliminado = true;
+
+    // Actualizar el campo oculto y la lista visual
+    $("#verbo_id").val(verbosSeleccionados.join(","));
+    actualizarListaVerbos();
+  });
+
+  // Detectar cambios en el select de verbos
+  $("#verb-filter_popup").change(function () {
+    var nuevosIds = $(this).val() || []; // Obtener los IDs seleccionados
+    var nuevosNombres = $("#verb-filter_popup option:selected").map(function () {
+      return $(this).text();
+    }).get();
+
+    // Agregar solo los verbos que no estén ya en la lista
+    nuevosIds.forEach(function (id, index) {
+      if (!verbosSeleccionados.includes(id.toString())) {
+        verbosSeleccionados.push(id.toString());
+        nombresVerbos.push(nuevosNombres[index]);
+      }
+    });
+
+    // Actualizar campo oculto con los IDs seleccionados
+    $("#verbo_id").val(verbosSeleccionados.join(","));
+
+    // Actualizar la lista visual de verbos seleccionados
+    actualizarListaVerbos();
+  });
+
+
+
+  // Enviar formulario por AJAX
+  $("#form-datos").submit(function (e) {
+    e.preventDefault();
+
+    var nombreMateria = $("#nombre-materia").val();
+    let verbosEnviados = verbosSeleccionados.join(",");    
+
+    $.ajax({
+      url: "http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/agregar_verbo_materia.php",
+      type: "POST",
+      data: {
+        nombreMateria: nombreMateria, // Enviar el nombre de la materia
+        verbo_id: verbosEnviados, // Enviar la lista de verbos seleccionados
+        otros_datos: $(this).serialize() // Enviar los demás datos del formulario
+      },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          alert("Verbos y materia guardados correctamente.");
+          $('#modal-datos').modal('hide');
+          location.reload();
+        } else {
+          $("#error-message").removeClass("d-none").text(response.message);
+        }
+      },
+      error: function (xhr) {
+        //console.error("Error en AJAX:", xhr.responseText);
+        $("#error-message").removeClass("d-none").text("Ocurrió un error al guardar.");
+      }
+    });
+  });
+});
+
+// para actualizar desde aqui
+document.addEventListener("click", async function (e) {
+  if (e.target.classList.contains("btn-actualizar")) {
+    const nombreMateria = e.target.dataset.nombre;
+
+
+    // Colocar el nombre de la materia en el input
+    document.getElementById("nombre-materia").value = nombreMateria;
+
+    // Llamar al fetch para cargar los verbos
+    await cargarVerbosDeMateria(nombreMateria);
+  }
+});
+
+async function cargarVerbosDeMateria(idMateria) {
+  try {
+    const response = await fetch(`http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_verbos_por_materia.php?idMateria=${idMateria}`);
+    const data = await response.json();
+
+    if (data.error) {
+      console.error("Error desde PHP:", data.error);
+      return;
+    }
+    //console.log("Respuesta del servidor:", data);
+    const contenedor = document.getElementById("verbos-seleccionados");
+    contenedor.innerHTML = "";
+
+    data.verbos.forEach(verbo => {
+      const li = document.createElement("li");
+      li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+
+      li.innerHTML = `
+        ${verbo.nombre}
+        <button class="btn btn-danger btn-sm btn-eliminar-verbo" 
+                data-id="${verbo.id_verbo}" 
+                data-id-materia="${data.id_materia}"
+          Eliminar
+        </button>
+      `;
+
+      contenedor.appendChild(li);
+    });
+
+
+  } catch (error) {
+    console.error("Error cargando verbos de materia:", error);
+  }
+}
+
+document.addEventListener("click", async function (e) {
+  if (e.target.classList.contains("btn-eliminar-verbo")) {
+    const idVerbo = e.target.getAttribute("data-id");
+    const idMateria = e.target.getAttribute("data-id-materia");
+
+    const nombreMateria = document.getElementById("nombre-materia").value.trim();
+
+    // Mostrar confirmación antes de eliminar
+    const confirmacion = confirm("¿Estás seguro de que deseas eliminar este verbo?");
+    if (!confirmacion) return;
+
+    try {
+      const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/eliminar_verbo_materia.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id_verbo: idVerbo,
+          id_materia: idMateria
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        mostrarMensaje("success", "Verbo eliminado correctamente.");
+        cargarVerbosDeMateria(nombreMateria);
+        actualizarListaVerbos();
+      } else {
+        mostrarMensaje("error", result.message || "Error al eliminar el verbo.");
+      }
+    } catch (error) {
+      console.error("Error al eliminar verbo:", error);
+    }
+  }
+});
+
+// Detección de celda verbo a div
+document.addEventListener("DOMContentLoaded", function () {
+  inicializarEventosDOM();
+
+  // Evento para capturar clicks en la columna de verbos
+  const tabla = document.getElementById("data-table");
+  tabla.addEventListener("click", function (event) {
+    const celda = event.target;
+
+    // Verificamos clic en columna de verbos
+    const fila = celda.closest("tr");
+    const celdas = fila?.getElementsByTagName("td");
+
+    if (celdas && celda === celdas[2]) {
+      const verbosTexto = celda.textContent.trim();
+      mostrarVerbosEnDescripcion(verbosTexto);
+    }
+  });
+});
+
+function mostrarVerbosEnDescripcion(verbosTexto) {
+  const divDescripcion = document.getElementById("verb-description");
+
+  if (!verbosTexto) {
+    divDescripcion.innerHTML = "<p>No hay verbos asociados.</p>";
+    return;
+  }
+
+  const verbosArray = verbosTexto.split(',').map(v => v.trim().toLowerCase());
+
+  fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_verbos.php")
+    .then(response => response.json())
+    .then(data => {
+      const verbosFiltrados = data.filter(verbo =>
+        verbosArray.includes(verbo.nombre.toLowerCase())
+      );
+
+      if (verbosFiltrados.length === 0) {
+        divDescripcion.innerHTML = "<p>No se encontraron descripciones para los verbos.</p>";
+        return;
+      }
+
+      let html = `<ul class="list-group list-group-flush">`;
+      verbosFiltrados.forEach(verbo => {
+        html += `<li class="list-group-item">
+                    <strong>${verbo.nombre}</strong><br>
+                    <small>${verbo.descripcion}</small>
+                 </li>`;
+      });
+      html += "</ul>";
+
+      divDescripcion.innerHTML = html;
+      divDescripcion.classList.add("expandida");
+    })
+    .catch(error => {
+      console.error("Error al obtener descripciones:", error);
+      divDescripcion.innerHTML = "<p>Error al cargar las descripciones.</p>";
+    });
+}

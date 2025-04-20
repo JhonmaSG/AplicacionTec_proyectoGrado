@@ -1,0 +1,253 @@
+:root {
+  --font-size-small: 13px;
+  --font-size-standard: 15px;
+  --font-size-big: 17px;
+  --primary-color: #007bff;
+  --border-radius: 8px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: var(--font-size-standard);
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+@media (forced-colors: active) {
+  body {
+    background-color: white;
+    color: black;
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 1500px;
+  /* max-height: 750px;*/
+  overflow-y: auto;
+  margin: 59px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.5s, color 0.5s;
+}
+
+/* Container Grafica */
+.container-btn-grafica{
+  margin: auto;
+  padding: 30px;
+  padding-top: 50px;
+}
+
+.grafica-container{
+  width:100%;
+  height:100px
+}
+
+.nuevo-grafica-container{
+  width:100%;
+  height:100px
+}
+
+h1 {
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  padding: 50px 0;
+}
+
+/*  responsive div filters*/
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  flex: 1 1 calc(25% - 15px);
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.filter-item label {
+  font-weight: 600;
+  color: #444;
+}
+
+.filter-item select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: border-color 0.2s ease;
+}
+
+.filter-item select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.checkbox-filter {  
+  margin-top: 10px;
+  box-shadow: 0;
+  zoom: 1.5;
+}
+
+/* Comportamiento responsivo */
+@media (max-width: 600px) {
+  .filter-item {
+    flex: 1 1 100%;
+  }
+}
+
+/* Rensponsive Actions */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Comportamiento responsivo */
+@media (max-width: 700px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+
+  .filters {
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/*responsive table*/
+.table-responsive-custom {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-responsive-custom .table {
+  min-width: 800px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: center;
+  /* border: 1px solid #dee2e6; */
+  border: 1px solid #ddd;
+}
+
+.table thead tr th{
+  background-color: #4c82af;
+  color: white;
+}
+
+td:hover {
+  background-color: #edf7ff;
+  cursor: pointer;
+}
+
+.chart {
+  margin-top: 20px;
+}
+
+.description {
+  height: 150px;
+  max-height: 220px;
+  overflow-y: auto;
+  transition: height 0.3s ease;
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Fondo del modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Contenido del modal */
+.modal-content {
+  background-color: white;
+  font-size: var(--font-size-standard);
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  text-align: center;
+  border-radius: 8px;
+}
+
+/* Botón de cierre */
+.close {
+  color: red;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: darkred;
+}
+
+/* Colour btn's graphics dinamics */
+.btn-filtro.active {
+  background-color: #0056b3 !important; /* Color de fondo */
+  color: white !important; /* Color del texto */
+  border: 2px solid #004494 !important; /* Borde */
+}
+
+#btnSubir {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 999;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: none; /* oculto por defecto */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: opacity 0.3s ease;
+}
+
+#btnSubir:hover {
+  background-color: #0056b3;
+}

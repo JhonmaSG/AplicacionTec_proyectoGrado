@@ -1,0 +1,111 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f4f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1500px;
+    /* max-height: 750px;*/
+    overflow-y: auto;
+    margin: 59px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s, color 0.5s;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+/* Filtros */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.filter-item {
+    flex: 1 1 45%;
+}
+
+.filter-item input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botones de acción */
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.actions button {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+}
+
+/* Tabla */
+.table-responsive-custom {
+    overflow-x: auto;
+}
+
+table.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+.table th,
+.table td {
+    text-align: left;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+}
+
+.table thead {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Botones dentro de la tabla */
+.table button {
+    margin-right: 5px;
+    font-size: 0.85rem;
+}
+
+/* Botón subir */
+#btnSubir {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+#btnSubir:hover {
+    background-color: #0b5ed7;
+}

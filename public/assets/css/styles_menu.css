@@ -1,0 +1,150 @@
+/* Estilos generales */
+:root {
+  --font-size-small: 13px;
+  --font-size-standard: 15px;
+  --font-size-big: 17px
+}
+body {
+  font-family: Arial, sans-serif;
+  font-size: var(--font-size-standard);
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  position: relative;
+  height: 100vh;
+}
+
+/* Estilo para el botón de tres rayas */
+.top-bar {
+  display: flex;
+  position: absolute !important;
+  justify-content: space-between; /* elementos en los extremos */
+  align-items: center;
+  padding: 10px 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 98.5%;
+  z-index: 1000;
+}
+
+.menu-btn {
+  background-color: #90ee90;
+  font-size: var(--font-size-standard);
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-left: 10px;
+}
+
+.logout-btn {
+  background-color: #ff6666;
+  font-size: var(--font-size-standard);
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+
+/* Menú */
+.menu {
+  display: none;
+  flex-direction: column;
+  background-color: white;
+  position: absolute;
+  top: 70px;
+  left: 10px;
+  width: 200px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 9999;
+}
+
+
+.menu-item {
+  text-decoration: none;
+  color: #333;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Iconos SVG */
+.menu-item svg {
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0; 
+}
+
+/* Menú visible cuando se activa */
+.menu.show {
+  display: flex;
+}
+
+/* Estilos para el botón flotante */
+#btnSubir {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  display: none; /* Oculto al inicio */
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease-in-out;
+}
+
+#btnSubir:hover {
+  background-color: #0056b3;
+}
+
+.user-btn{
+  padding: 10px;
+  color: white;
+  background-color: rgba(39, 38, 38, 0.877);
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 600px) {
+  .menu-btn,
+  .user-btn,
+  .logout-btn {
+    font-size: 12px;
+    padding: 6px 8px;
+    margin: 2px;
+    max-width: 32%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 10px;
+  }
+
+  .top-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+  }
+}
+

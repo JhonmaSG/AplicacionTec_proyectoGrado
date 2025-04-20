@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #4c82af, #47b8ff);
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.container {
+    width: 85%;
+    max-width: 1100px;
+    max-height: 810px;
+    overflow-y: auto;
+    margin: 59px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s, color 0.5s;
+  }
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #4c82af;
+    color: white;
+}
+
+tr.objective-row {
+    cursor: pointer;
+}
+
+tr.objective-row:hover {
+    background-color: #ddf0ff;  /* Color objetivo mouse*/
+}
+
+tr.results-row {
+    display: none;
+    background-color: #f9f9f9;
+    font-style: italic;
+}
+
+tr.selected-objective {
+    background-color: #dff0d8;  /* Color celda seleccionada */
+}
+
+tr.added-results {
+    background-color: #e0f7fa;  /* Color celdas de resultados añadidas */
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul li {
+    padding: 5px 0;
+}

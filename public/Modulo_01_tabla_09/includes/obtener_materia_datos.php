@@ -1,14 +1,12 @@
 <?php
 include '../../../app/config/ConfiguracionBD/ConexionBD.php';
 
-// Consulta para obtener las materias con sus datos
+$materias = [];
+
+// Consulta
 $query = "SELECT * FROM vista_materias_ordenadas";
 
 $result = $conn->query($query);
-
-$materias = [];
-$areas = [];
-$semestres = [];
 
 while ($row = $result->fetch_assoc()) {
     $id_materia = $row['Id_materia'];

@@ -5,7 +5,6 @@ let state = {
   materias: [],
   tipoFiltro: 'materias'
 };
-let materias = [];
 
 // Inicializar Eventos DOM
 const tableBody = document.getElementById("table-body");
@@ -45,7 +44,7 @@ function inicializarEventosDOM() {
   // Eventos de botones dinamicos de filtro Graphics
   document.querySelectorAll(".btn-filtro").forEach(btn => {
     btn.addEventListener("click", function () {
-      state.tipoFiltro = this.getAttribute("data-filtro"); // Obtiene tipo de filtro del atributo data-filtro
+      state.tipoFiltro = this.getAttribute("data-filtro"); 
       filtrarMaterias();
     });
   });
@@ -89,7 +88,9 @@ function configurarModal() {
 function generarDatosGrafica(materiasFiltradas) {
   return materiasFiltradas.map(materia => ({
     name: materia.nombre,
-    y: materia.verbos.length
+    y: materia.verbos.length,
+    creditos: materia.creditos,
+    verbos: materia.nombres_verbos
   }));
 }
 
@@ -103,32 +104,24 @@ function datosArea(materiasFiltradas) {
       areaVerbosUnicos[area] = new Set();
     }
 
-    let verbosMateria = materia.verbos;
+    let verbosMateria = materia.nombres_verbos; // Usar solo nombres ya procesados
 
-    // Si los verbos vienen como string separados por comas
-    if (typeof verbosMateria === 'string') {
-      verbosMateria = verbosMateria.split(',').map(v => v.trim().toLowerCase());
-    } else if (Array.isArray(verbosMateria)) {
-      verbosMateria = verbosMateria.map(v => {
-        if (typeof v === 'string') {
-          return v.trim().toLowerCase();
-        } else if (v.nombre) {
-          return v.nombre.trim().toLowerCase();
-        }
-        return v; // fallback
-      });
+    if (!Array.isArray(verbosMateria)) {
+      verbosMateria = [];
     }
 
     verbosMateria.forEach(verbo => {
-      areaVerbosUnicos[area].add(verbo);
+      areaVerbosUnicos[area].add(verbo.trim().toLowerCase());
     });
   });
 
   return Object.keys(areaVerbosUnicos).map(area => ({
     name: area,
-    y: areaVerbosUnicos[area].size
+    y: areaVerbosUnicos[area].size,
+    verbos: Array.from(areaVerbosUnicos[area])
   }));
 }
+
 
 // Función para actualizar la gráfica cada que hay petición
 function actualizarGrafica(materiasFiltradas) {
@@ -142,10 +135,11 @@ function actualizarGrafica(materiasFiltradas) {
     case 'materias':
       tituloX = 'Materias';
       const datosMaterias = generarDatosGrafica(materiasFiltradas);
+      console.log("datosMaterias: ", datosMaterias);
       categorias = datosMaterias.map(d => d.name);
       series = [{
         name: 'Verbos por Materia',
-        data: datosMaterias.map(d => d.y)
+        data: datosMaterias
       }];
       break;
     case 'areas':
@@ -154,7 +148,7 @@ function actualizarGrafica(materiasFiltradas) {
       categorias = datosAreas.map(d => d.name);
       series = [{
         name: 'Verbos por Área',
-        data: datosAreas.map(d => d.y)
+        data: datosAreas
       }];
       break;
   }
@@ -162,17 +156,25 @@ function actualizarGrafica(materiasFiltradas) {
   // Tooltip dinámico según tipo de filtro
   let tooltipConfig = state.tipoFiltro === 'materias' ? {
     formatter: function () {
+      const punto = this.point;
+      const verbos = Array.isArray(punto.verbos) ? punto.verbos.join(', ') : 'N/D';
       return `<b>${this.series.name}</b><br>
-              <b>${tituloX}:</b> ${this.point.name}<br>
-              <b>Cantidad de Verbos x Materia: ${this.point.y.toFixed(2)}%</b><br>`;
+              <b>${state.tipoFiltro === 'materias' ? 'Materia' : 'Área'}:</b> ${punto.name}<br>
+              ${state.tipoFiltro === 'materias' ? `<b>Créditos:</b> ${punto.creditos ?? 'N/D'}<br>` : ''}
+              <b>Cantidad de Verbos:</b> ${punto.y}<br>
+              <b>Verbos:</b> ${verbos}`;
     }
   } : {
     formatter: function () {
+      const punto = this.point;
+      const verbos = Array.isArray(punto.verbos) ? punto.verbos.join(', ') : 'N/D';
       return `<b>${this.series.name}</b><br>
-              <b>${tituloX}:</b> ${this.point.name}<br>
-              <b>Cantidad de Verbos x Área: ${this.point.y.toFixed(2)}%</b><br>`;
+              <b>Área:</b> ${punto.name}<br>
+              <b>Cantidad de Verbos:</b> ${punto.y}<br>
+              <b>Verbos:</b> ${verbos}`;
     }
   };
+  
 
   // Destruir gráfica anterior si existe
   if (Highcharts.charts && Highcharts.charts.length > 0) {
@@ -195,16 +197,14 @@ function actualizarGrafica(materiasFiltradas) {
       allowDecimals: false,
       title: { text: tituloY }
     },
-    tooltip: {
-      pointFormat: '<b>{point.y}</b> verbos'
-    },
+    tooltip: tooltipConfig,
     series: series,
     exporting: { enabled: true },
     credits: { enabled: false }
   });
 }
 ///////////////////////////////////////////////////////////////////
-// filtra las materias por Area y por el search que tenemos 
+// filtra las materias por Area y por el verbo 
 async function filtrarMaterias() {
   const areaSeleccionada = areaFilter.value;
   const verbSeleccionado = verbFilter.value;
@@ -217,19 +217,20 @@ async function filtrarMaterias() {
   // Agrega clase activa al botón seleccionado
   document.querySelector(`[data-filtro="${state.tipoFiltro}"]`).classList.add("active");
 
-  if (!materias || materias.length === 0) {
+  if (!state.materias || state.materias.length === 0) {
     try {
       const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_materia_verbo.php");
+      
       if (!response.ok) {
         throw new Error("Error al obtener las materias desde la base de datos");
       }
-      materias = await response.json();
-      aplicarFiltro(materias, areaSeleccionada, verbSeleccionado);
+      state.materias = await response.json();
+      aplicarFiltro(state.materias, areaSeleccionada, verbSeleccionado);
     } catch (error) {
       console.error("Error cargando las verbos de obtener verbos:", error);
     }
   } else {
-    aplicarFiltro(materias, areaSeleccionada, verbSeleccionado);
+    aplicarFiltro(state.materias, areaSeleccionada, verbSeleccionado);
   }
   desplazamientoGrafica();
 }
@@ -237,15 +238,15 @@ async function filtrarMaterias() {
 
 // Función para filtrar materias por área, verbo y búsqueda
 function aplicarFiltro(materias, areaFilter, verbFilter) {
-  // Convertir a número para hacer comparación correcta
-  const areaSeleccionadaNum = areaFilter ? parseInt(areaFilter.value) : null;
-  const verbSeleccionadoNum = verbFilter ? parseInt(verbFilter.value) : null;
+  const areaSeleccionadaNum = areaFilter ? parseInt(areaFilter) : null;
+  const verboSeleccionadoId = verbFilter ? parseInt(verbFilter) : null;
+
 
   const materiasFiltradas = materias.filter(materia => {
-    return (
-      (areaSeleccionadaNum === null || materia.id_area == areaSeleccionadaNum) &&
-      (verbSeleccionadoNum === null || materia.id_verbo == verbSeleccionadoNum)
-    );
+    const coincideArea = areaSeleccionadaNum === null || materia.id_area == areaSeleccionadaNum;
+    const coincideVerbo = verboSeleccionadoId === null ||
+      materia.verbos.includes(verboSeleccionadoId); // ← compara con los IDs directamente
+    return coincideArea && coincideVerbo;
   });
 
   if (materiasFiltradas.length === 0) {
@@ -256,13 +257,13 @@ function aplicarFiltro(materias, areaFilter, verbFilter) {
   }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////
 // Función para cargar materias desde el PHP/API
 async function cargarMateriaVerbo() {
   try {
     const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_materia_verbo.php");
     if (!response.ok) throw new Error("Error al obtener las materias");
-
     const materias = await response.json(); // Declaramos materias correctamente
     cargarTabla(materias);
   } catch (error) {
@@ -354,11 +355,14 @@ function cargarTabla(materiasFiltradas) {
 
   materiasFiltradas.forEach(materia => {
 
+    // Mostrar los nombres de los verbos asociados a cada materia
+    const verbosNombres = materia.nombres_verbos ? materia.nombres_verbos.join(', ') : 'N/A';
+
     tableBody.innerHTML += `
         <tr>
             <td>${materia.nombre}</td>
             <td>${materia.creditos}</td>
-            <td>${materia.verbos}</td>
+            <td>${verbosNombres}</td>  <!-- Mostrar los nombres de los verbos -->
             <td>${materia.area || 'N/A'}</td>
             <td>
               <button 
@@ -371,9 +375,9 @@ function cargarTabla(materiasFiltradas) {
               </button>
             </td>
         </tr>`;
-
   });
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Funcion para buscar la materia mas rapido en la parte de agregar datos
 async function buscador_materias_datos(inputId, apiUrl) {
@@ -458,7 +462,7 @@ function actualizarListaVerbos() {
         `);
   });
 
-  // Si se eliminó un verbo, actualiza la interfaz inmediatamente
+  // Si se eliminó un verbo, actualiza interfaz
   if (verboEliminado) {
     verboEliminado = false; // Reset variable
   }
@@ -517,7 +521,7 @@ $(document).ready(function () {
     // Actualizar campo oculto con los IDs seleccionados
     $("#verbo_id").val(verbosSeleccionados.join(","));
 
-    // Actualizar la lista visual de verbos seleccionados
+    // Actualizar lista de verbos seleccionados
     actualizarListaVerbos();
   });
 

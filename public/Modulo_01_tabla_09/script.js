@@ -5,6 +5,12 @@ let state = {
   materias: [],
   tipoFiltro: 'materias'
 };
+// Variables para la paginación
+let evitarDesplazamientoGlobal = true;
+let limit = 20;  // Valor inicial (coincide con <option value="20" selected>)
+let offset = 0; 
+let currentPage = 1;
+let totalPages = 1;
 
 // Inicializar Eventos DOM
 const areaFilter = document.getElementById("area-filter");
@@ -14,13 +20,29 @@ const searchMateria = document.getElementById("search-materia");
 const graficaContainer = document.getElementById("grafica-container");
 const container = document.querySelector('.container');
 const btnSubir = document.getElementById("btnSubir");
-if (btnSubir) {
-  btnSubir.addEventListener('click', subirArriba);
-}
 
 function inicializarEventosDOM() {
   // Evento para impresión de tabla
   document.getElementById('print-table').addEventListener('click', imprimirTabla);
+
+  // Configurar eventos para btnSubir
+  if (btnSubir) {
+    // Evento para el clic del botón
+    btnSubir.addEventListener('click', subirArriba);
+
+    // Mostrar/Ocultar botón según el desplazamiento del contenedor o ventana
+    const scrollElement = container && container.scrollHeight > container.clientHeight ? container : window;
+    scrollElement.addEventListener('scroll', () => {
+      const scrollPosition = scrollElement === window ? window.scrollY : container.scrollTop;
+      if (scrollPosition > 100) { // Mostrar botón después de 100px de desplazamiento
+        btnSubir.style.display = 'block';
+      } else {
+        btnSubir.style.display = 'none';
+      }
+    });
+  } else {
+    console.error('Elemento #btnSubir no encontrado en el DOM');
+  }
 
   // Evento para activar pantalla completa en la gráfica
   const fullscreenButton = document.getElementById("fullscreen-chart");
@@ -38,6 +60,7 @@ function inicializarEventosDOM() {
   if (showChartButton) {
     showChartButton.addEventListener("click", () => {
       state.tipoFiltro = 'materias';
+      evitarDesplazamientoGlobal = false;
       filtrarMaterias();
       graficaContainer.scrollIntoView({ behavior: "smooth" });
     });
@@ -48,6 +71,17 @@ function inicializarEventosDOM() {
   areaFilter.addEventListener("change", filtrarMaterias);
   carreraFilter.addEventListener("change", filtrarMaterias);
   semestreFilter.addEventListener("change", filtrarMaterias);
+
+  // Evento para el selector de registros por página
+  const limitSelect = document.getElementById("limit-select");
+  if (limitSelect) {
+    limitSelect.addEventListener("change", () => {
+      limit = parseInt(limitSelect.value);
+      currentPage = 1; // Reiniciar a la primera página
+      offset = 0;
+      filtrarMaterias();
+    });
+  }
 
   // Eventos de botones dinamicos de filtro Graphics
   document.querySelectorAll(".btn-filtro").forEach(btn => {
@@ -127,8 +161,15 @@ function generarDatosGrafica(materiasFiltradas) {
 
 // Función para actualizar la gráfica cada que hay petición
 function actualizarGrafica(materiasFiltradas) {
-  let seriesData = generarDatosGrafica(materiasFiltradas);
+  // Caso: No hay datos para graficar
+  console.log(`Contenido de materias: `,materiasFiltradas)
+  if (!materiasFiltradas || materiasFiltradas.length === 0) {
+    console.log(`No se encontraron datos para graficar: `,materiasFiltradas)
+    graficaContainer.innerHTML = '<center><p>No se encontraron datos para graficar</p></center>';
+    return;
+  }
 
+  let seriesData = generarDatosGrafica(materiasFiltradas);
   let tipoCategoria = [];
   let tituloX = "";
   let tipoChart = "line";
@@ -252,8 +293,6 @@ async function filtrarMaterias() {
     btn.classList.remove("active"); // Quita clase activa de todos los botones
   });
   document.querySelector(`[data-filtro="${state.tipoFiltro}"]`).classList.add("active"); // Agrega clase activa al botón seleccionado
-
-
   if (!state.materias || state.materias.length === 0) {
     try {
       const response = await fetch("http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/obtener_materia_datos.php");
@@ -268,11 +307,23 @@ async function filtrarMaterias() {
   } else {
     aplicarFiltro(state.materias, areaSeleccionada, carreraSeleccionada, semestreSeleccionado, textoBusqueda);
   }
-  desplazamientoGrafica();
+  desplazamientoGrafica(evitarDesplazamientoGlobal);
 }
 ////////////////////////////////////////////////////////
 // Función auxiliar para aplicar el filtro y actualizar tabla/gráfica sin este ocurre un error al actualizar las materias 
 function aplicarFiltro(materias, areaSeleccionada, carreraSeleccionada, semestreSeleccionado, textoBusqueda) {
+  // Validar que materias sea un array
+  if (!Array.isArray(materias)) {
+    // Obtener elementos del DOM
+    const pagination = document.getElementById("pagination");
+    const numRegistros = document.getElementById("numRegistros");
+    
+    console.error('Materias no es un array:', materias);
+    tableBody.innerHTML = "<tr><td colspan='7'>Error en los datos: materias no válidas</td></tr>";
+    if (pagination) pagination.innerHTML = "";
+    return;
+  }
+  
   // Convertir a número para hacer comparación correcta
   const areaSeleccionadaNum = areaSeleccionada ? parseInt(areaSeleccionada) : null;
   const carreraSeleccionadaNum = carreraSeleccionada ? parseInt(carreraSeleccionada) : null;
@@ -287,12 +338,45 @@ function aplicarFiltro(materias, areaSeleccionada, carreraSeleccionada, semestre
     );
   });
 
-  if (materiasFiltradas.length === 0) {
-    tableBody.innerHTML = "<tr><td colspan='6'>No se encontraron resultados</td></tr>";
-  } else {
-    cargarTabla(materiasFiltradas);
-    actualizarGrafica(materiasFiltradas);
+  // Calcular total de filas para paginación (cada dato es una fila)
+  let totalItems = materiasFiltradas.reduce((total, materia) => {
+    return total + (materia.datos && Array.isArray(materia.datos) ? materia.datos.length : 0);
+  }, 0);
+
+  // Actualizar totalPages
+  totalPages = Math.max(1, Math.ceil(totalItems / limit)); // Asegura al menos 1 página
+
+  // Ajustar currentPage si es mayor que totalPages
+  if (currentPage > totalPages) {
+    currentPage = totalPages;
+    offset = (currentPage - 1) * limit;
   }
+
+  // Paginar los datos
+  const startIndex = (currentPage - 1) * limit;
+  let currentIndex = 0;
+  let paginatedData = [];
+
+  for (let materia of materiasFiltradas) {
+    if (materia.datos && Array.isArray(materia.datos)) {
+      for (let dato of materia.datos) {
+        if (currentIndex >= startIndex && currentIndex < startIndex + limit) {
+          paginatedData.push({ materia, dato });
+        }
+        currentIndex++;
+      }
+    }
+  }
+
+  if (paginatedData.length === 0) {
+    tableBody.innerHTML = "<tr><td colspan='7'>No se encontraron resultados</td></tr>";
+    const pagination = document.getElementById("pagination");
+    if (pagination) pagination.innerHTML = "";
+  } else {
+    cargarTabla(paginatedData);
+    renderPagination();
+  }
+  actualizarGrafica(materiasFiltradas);
 }
 ////////////////////////////////////////////////////////////////////////
 // Función para cargar materias desde el php/api
@@ -301,9 +385,10 @@ async function cargarMaterias() {
     const response = await fetch("http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/obtener_materia_datos.php");
     if (!response.ok) throw new Error("Error al obtener las materias");
     state.materias = await response.json();
-    cargarTabla(state.materias);
+    aplicarFiltro(state.materias, "", "", "", ""); // Carga inicial con filtros vacíos
   } catch (error) {
     console.error("Error cargando materias:", error);
+    tableBody.innerHTML = "<tr><td colspan='7'>Error al cargar materias</td></tr>";
   }
 }
 
@@ -375,25 +460,94 @@ function cargarSemestres() {
 }
 ///////////////////////////////////////////////////////////////////////
 // Función para cargar datos en la tabla este utiliza el cargar materias 
-function cargarTabla(materiasFiltradas) {
-
-  //console.log("bandera del cargado de materias "+materiasFiltradas);
-
+function cargarTabla(paginatedData) {
   tableBody.innerHTML = "";
-  materiasFiltradas.forEach(materia => {
-    materia.datos.forEach(dato => {
-      tableBody.innerHTML += `
-              <tr>
-                  <td>${materia.nombre}</td>
-                  <td>${materia.area}</td>
-                  <td>${materia.semestre || 'N/A'}</td>
-                  <td>${dato.inscritos || '0'}</td>
-                  <td>${dato.reprobados || '0'}</td>
-                  <td>${dato.tasa_reprobacion || '0'}%</td>
-              </tr>`;
-    });
+  if (!Array.isArray(paginatedData)) {
+    console.error("paginatedData no es un array:", paginatedData);
+    tableBody.innerHTML = "<tr><td colspan='7'>Error en los datos</td></tr>";
+    return;
+  }
+
+  paginatedData.forEach(({ materia, dato }) => {
+    tableBody.innerHTML += `
+      <tr>
+        <td>${materia.nombre || 'N/A'}</td>
+        <td>${materia.area || 'N/A'}</td>
+        <td>${materia.semestre || 'N/A'}</td>
+        <td>${dato.periodo || 'N/A'}</td>
+        <td>${dato.inscritos || '0'}</td>
+        <td>${dato.reprobados || '0'}</td>
+        <td>${dato.tasa_reprobacion || '0'}%</td>
+      </tr>`;
   });
 }
+
+function renderPagination() {
+  const pagination = document.getElementById("pagination");
+  if (!pagination) {
+    console.error("Elemento #pagination no encontrado en el DOM. Asegúrate de incluir <nav aria-label='Page navigation example'><ul id='pagination' class='pagination'></ul></nav> después de la tabla.");
+    return;
+  }
+
+  pagination.innerHTML = "";
+
+  // Botón "Previous"
+  const prevLi = document.createElement("li");
+  prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
+  prevLi.innerHTML = `<a class="page-link" href="#">Previous</a>`;
+  prevLi.querySelector("a").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+      changePage(currentPage - 1);
+    }
+  });
+  pagination.appendChild(prevLi);
+
+  // Números de página (mostrar un rango limitado para evitar demasiados botones)
+  const maxButtons = 5; // Máximo de botones numéricos a mostrar
+  let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+  // Ajustar startPage si endPage está cerca del final
+  if (endPage - startPage + 1 < maxButtons) {
+    startPage = Math.max(1, endPage - maxButtons + 1);
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    const li = document.createElement("li");
+    li.className = `page-item ${i === currentPage ? "active" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+    li.querySelector("a").addEventListener("click", (e) => {
+      e.preventDefault();
+      changePage(i);
+    });
+    pagination.appendChild(li);
+  }
+
+  // Botón "Next"
+  const nextLi = document.createElement("li");
+  nextLi.className = `page-item ${currentPage === totalPages ? "disabled" : ""}`;
+  nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
+  nextLi.querySelector("a").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      changePage(currentPage + 1);
+    }
+  });
+  pagination.appendChild(nextLi);
+}
+
+function changePage(page) {
+  if (page >= 1 && page <= totalPages) {
+    currentPage = page;
+    offset = (currentPage - 1) * limit;
+    evitarDesplazamientoGlobal = true;
+    filtrarMaterias();
+  } else {
+    console.warn('Página inválida:', page, 'Total Pages:', totalPages); // Depuración
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////
 // Eventos para filtrar
 tableBody.addEventListener("change", filtrarMaterias); //tableBody - areaFilter

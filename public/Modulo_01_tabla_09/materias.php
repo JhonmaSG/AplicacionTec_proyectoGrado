@@ -17,12 +17,11 @@ Auth::evitarCache();
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="../assets/css/styles_menu.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
   <script src="https://code.highcharts.com/12.1/highcharts.js"></script>
   <script src="https://code.highcharts.com/12.1/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/12.1/highcharts-more.js"></script>
   <script src="https://code.highcharts.com/modules/full-screen.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -30,7 +29,7 @@ Auth::evitarCache();
 
   <?php include '../assets/php/menu.php'; ?>
 
-  <div class="container">
+  <div class="container" id="container">
     <h1>Visualización de Deserción por Materia</h1>
     <!-- Filtros -->
     <div class="filters">
@@ -47,6 +46,7 @@ Auth::evitarCache();
       <div class="filter-item">
         <label for="semestre-filter"><b>Semestre:</b></label>
         <select id="semestre-filter">
+          <option value="">Todos</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -76,6 +76,22 @@ Auth::evitarCache();
       <?php include 'includes/popup.php'; ?>
     </div>
 
+    <!-- Paginación de Bootstrap -->
+    <nav aria-label="Page navigation example" id="numRegistros" class="d-flex justify-content-center align-items-center">
+      <div class="d-flex align-items-center">
+        <label for="limit-select" class="me-2">Registros por página:</label>
+        <select id="limit-select" class="form-select form-select-sm" style="width: auto;">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="75">75</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <ul id="pagination" class="pagination mb-0 ms-3 justify-content-center"></ul>
+    </nav><br>
+
     <!-- Tabla -->
     <div class="table-responsive-custom">
       <table id="data-table" class="table">
@@ -84,6 +100,7 @@ Auth::evitarCache();
             <th>Materia</th>
             <th>Área</th>
             <th>Semestre</th>
+            <th>Periodo</th>
             <th>Inscritos</th>
             <th>Reprobados</th>
             <th>Tasa de Reprobación (%)</th>

@@ -9,7 +9,7 @@
   height: auto; /* Crecer con el contenido */
   min-height: calc(100vh - 60px); /* Cubrir la pantalla como mínimo */
   box-sizing: border-box;
-  overflow: auto; /* Permitir desplazamiento si el contenido excede */
+  overflow: auto;
 }
 
 /* Texto introductorio */
@@ -24,12 +24,12 @@
 /* Cuadrícula de tarjetas */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Aumentado a 250px para escritorio */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   margin-bottom: 40px;
-  max-width: 100%; /* Evita desbordamiento horizontal */
+  max-width: 100%;
   box-sizing: border-box;
-  height: auto; /* Crecer con las tarjetas */
+  height: auto;
 }
 
 /* Tarjetas */

@@ -1,8 +1,9 @@
 <!-- Botón para abrir el modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-datos">
-    Agregar Verbo
-</button>
-
+<?php if (Auth::esAdmin()): ?>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-datos">
+        Agregar Verbo
+    </button>
+<?php endif; ?>
 
 <!-- Modal -->
 <div class="modal fade" id="modal-datos" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">

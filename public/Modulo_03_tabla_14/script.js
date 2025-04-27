@@ -3,8 +3,15 @@ import { subirArriba, desplazamientoGrafica } from '/proyectoGrado/public/assets
 // Variables GLOBALES
 let state = {
   materias: [],
-  tipoFiltro: 'materias'
+  tipoFiltro: 'materias',
+  mostrarGrafica: false
 };
+// Variables para la paginación
+let evitarDesplazamientoGlobal = true;
+let limit = 20;  // Valor inicial
+let offset = 0;
+let currentPage = 1;
+let totalPages = 1;
 
 // Inicializar Eventos DOM
 const tableBody = document.getElementById("table-body");
@@ -13,13 +20,33 @@ const verbFilter = document.getElementById('verb-filter');
 const multiAreaFilter = document.getElementById('multi-area-filter');
 const verbDescription = document.getElementById('verb-description');
 const graficaContainer = document.getElementById("grafica-container");
+const container = document.querySelector('.container');
 const btnSubir = document.getElementById("btnSubir");
-if (btnSubir) {
-  btnSubir.addEventListener('click', subirArriba);
-}
 
 
 function inicializarEventosDOM() {
+  // Evento para impresión de tabla
+  document.getElementById('print-table').addEventListener('click', imprimirTabla);
+
+  // Configurar eventos para btnSubir
+  if (btnSubir) {
+    // Evento para el clic del botón
+    btnSubir.addEventListener('click', subirArriba);
+
+    // Mostrar/Ocultar botón según el desplazamiento del contenedor o ventana
+    const scrollElement = container && container.scrollHeight > container.clientHeight ? container : window;
+    scrollElement.addEventListener('scroll', () => {
+      const scrollPosition = scrollElement === window ? window.scrollY : container.scrollTop;
+      if (scrollPosition > 100) { // Mostrar botón después de 100px de desplazamiento
+        btnSubir.style.display = 'block';
+      } else {
+        btnSubir.style.display = 'none';
+      }
+    });
+  } else {
+    console.error('Elemento #btnSubir no encontrado en el DOM');
+  }
+
   // Evento para activar pantalla completa en la gráfica
   const fullscreenButton = document.getElementById("fullscreen-chart");
   if (fullscreenButton) {
@@ -35,7 +62,10 @@ function inicializarEventosDOM() {
   const showChartButton = document.getElementById("show-chart");
   if (showChartButton) {
     showChartButton.addEventListener("click", () => {
+      state.mostrarGrafica = true;
       state.tipoFiltro = 'materias';
+      evitarDesplazamientoGlobal = false;
+      graficaContainer.classList.remove('d-none');
       filtrarMaterias();
       graficaContainer.scrollIntoView({ behavior: "smooth" });
     });
@@ -44,13 +74,24 @@ function inicializarEventosDOM() {
   // Eventos de botones dinamicos de filtro Graphics
   document.querySelectorAll(".btn-filtro").forEach(btn => {
     btn.addEventListener("click", function () {
-      state.tipoFiltro = this.getAttribute("data-filtro"); 
+      state.tipoFiltro = this.getAttribute("data-filtro");
       filtrarMaterias();
     });
   });
 
   areaFilter.addEventListener("change", filtrarMaterias);
   verbFilter.addEventListener("change", filtrarMaterias);
+
+  // Evento para el selector de registros por página
+  const limitSelect = document.getElementById("limit-select");
+  if (limitSelect) {
+    limitSelect.addEventListener("change", () => {
+      limit = parseInt(limitSelect.value);
+      currentPage = 1; // Reiniciar a la primera página
+      offset = 0;
+      filtrarMaterias();
+    });
+  }
 
   //Evento para filtrar materias en el apartado de los datos
   buscador_materias_datos("nombre-materia", "http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/buscar_materia.php");
@@ -83,6 +124,73 @@ function configurarModal() {
     }
   };
 }
+function imprimirTabla() {
+  const printWindow = window.open('', '', 'height=600,width=800');
+  
+  // Clonar la tabla para no modificar el DOM original
+  const table = document.getElementById('data-table').cloneNode(true);
+  
+  // Definir constantes para los roles (coinciden con Auth.php)
+  const ROLES = {
+    SUPERADMIN: 0,
+    ADMIN: 1,
+    LECTOR: 2
+  };
+
+  // Eliminar la columna "Acción" solo si el usuario NO es Lector
+  if (window.rolUsuario !== ROLES.LECTOR) {
+    // Eliminar la última columna del encabezado (<th>)
+    const headerRow = table.querySelector('thead tr');
+    if (headerRow && headerRow.cells.length > 0) {
+      headerRow.deleteCell(-1); // Elimina la última celda del encabezado ("Acción")
+    }
+
+    // Eliminar la última columna de cada fila del cuerpo (<td>)
+    const bodyRows = table.querySelectorAll('tbody tr');
+    bodyRows.forEach(row => {
+      if (row.cells.length > 0) {
+        row.deleteCell(-1); // Elimina la última celda de cada fila ("Acción")
+      }
+    });
+  }
+
+  // Obtener el HTML de la tabla modificada
+  const tableHtml = table.outerHTML;
+
+  // Obtener la fecha y hora actual en formato legible
+  const ahora = new Date();
+  const opciones = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
+  const fechaHora = ahora.toLocaleString('es-ES', opciones);
+
+  // Generar el documento de impresión
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>Tabla de Materias y Verbos</title>
+      <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+        h1 { text-align: center; margin-bottom: 10px; }
+        .fecha-hora { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; }
+      </style>
+    </head>
+    <body>
+      <h1>Tabla de Materias y Verbos</h1>
+      <p class="fecha-hora">Generado el ${fechaHora}</p>
+      ${tableHtml}
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.print();
+}
 ///////////////////////////////////////////////////////////////////
 // Función para preparar datos de la gráfica desde la tabla
 function generarDatosGrafica(materiasFiltradas) {
@@ -94,37 +202,15 @@ function generarDatosGrafica(materiasFiltradas) {
   }));
 }
 
-function datosArea(materiasFiltradas) {
-  const areaVerbosUnicos = {};
-
-  materiasFiltradas.forEach(materia => {
-    const area = materia.area;
-
-    if (!areaVerbosUnicos[area]) {
-      areaVerbosUnicos[area] = new Set();
-    }
-
-    let verbosMateria = materia.nombres_verbos; // Usar solo nombres ya procesados
-
-    if (!Array.isArray(verbosMateria)) {
-      verbosMateria = [];
-    }
-
-    verbosMateria.forEach(verbo => {
-      areaVerbosUnicos[area].add(verbo.trim().toLowerCase());
-    });
-  });
-
-  return Object.keys(areaVerbosUnicos).map(area => ({
-    name: area,
-    y: areaVerbosUnicos[area].size,
-    verbos: Array.from(areaVerbosUnicos[area])
-  }));
-}
-
-
 // Función para actualizar la gráfica cada que hay petición
 function actualizarGrafica(materiasFiltradas) {
+  if (!state.mostrarGrafica) return; // Evitar generar gráfica si no se ha activado
+  // Caso: No hay datos para graficar
+  if (!materiasFiltradas || materiasFiltradas.length === 0) {
+    graficaContainer.innerHTML = '<center><p>No se encontraron datos para graficar</p></center>';
+    return;
+  }
+
   let tipoChart = 'bar';
   let tituloX = '';
   let tituloY = 'Cantidad de Verbos';
@@ -135,7 +221,6 @@ function actualizarGrafica(materiasFiltradas) {
     case 'materias':
       tituloX = 'Materias';
       const datosMaterias = generarDatosGrafica(materiasFiltradas);
-      console.log("datosMaterias: ", datosMaterias);
       categorias = datosMaterias.map(d => d.name);
       series = [{
         name: 'Verbos por Materia',
@@ -174,7 +259,7 @@ function actualizarGrafica(materiasFiltradas) {
               <b>Verbos:</b> ${verbos}`;
     }
   };
-  
+
 
   // Destruir gráfica anterior si existe
   if (Highcharts.charts && Highcharts.charts.length > 0) {
@@ -203,24 +288,57 @@ function actualizarGrafica(materiasFiltradas) {
     credits: { enabled: false }
   });
 }
+
+/////////////////////////////////////////////////////////////////
+function datosArea(materiasFiltradas) {
+  const areaVerbosUnicos = {};
+
+  materiasFiltradas.forEach(materia => {
+    const area = materia.area;
+
+    if (!areaVerbosUnicos[area]) {
+      areaVerbosUnicos[area] = new Set();
+    }
+
+    let verbosMateria = materia.nombres_verbos; // Usar solo nombres ya procesados
+
+    if (!Array.isArray(verbosMateria)) {
+      verbosMateria = [];
+    }
+
+    verbosMateria.forEach(verbo => {
+      areaVerbosUnicos[area].add(verbo.trim().toLowerCase());
+    });
+  });
+
+  return Object.keys(areaVerbosUnicos).map(area => ({
+    name: area,
+    y: areaVerbosUnicos[area].size,
+    verbos: Array.from(areaVerbosUnicos[area])
+  }));
+}
+
 ///////////////////////////////////////////////////////////////////
 // filtra las materias por Area y por el verbo 
 async function filtrarMaterias() {
   const areaSeleccionada = areaFilter.value;
   const verbSeleccionado = verbFilter.value;
-  //console.error("Error  las verbos:", verbFilter);
 
-  // Activa/Agrega botónes dinamicos (Por Materia / Por Área)
-  document.querySelectorAll(".btn-filtro").forEach(btn => {
-    btn.classList.remove("active"); // Quita clase activa de todos los botones
-  });
-  // Agrega clase activa al botón seleccionado
-  document.querySelector(`[data-filtro="${state.tipoFiltro}"]`).classList.add("active");
+  // Activa/Agrega botónes dinámicos (Por Materia / Por Área) solo si la gráfica está activa
+  if (state.mostrarGrafica) {
+    document.querySelectorAll(".btn-filtro").forEach(btn => {
+      btn.classList.remove("active");
+    });
+    const btnFiltro = document.querySelector(`[data-filtro="${state.tipoFiltro}"]`);
+    if (btnFiltro) {
+      btnFiltro.classList.add("active");
+    }
+  }
 
   if (!state.materias || state.materias.length === 0) {
     try {
       const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_materia_verbo.php");
-      
+
       if (!response.ok) {
         throw new Error("Error al obtener las materias desde la base de datos");
       }
@@ -232,29 +350,63 @@ async function filtrarMaterias() {
   } else {
     aplicarFiltro(state.materias, areaSeleccionada, verbSeleccionado);
   }
-  desplazamientoGrafica();
+  desplazamientoGrafica(evitarDesplazamientoGlobal);
 }
 
 
 // Función para filtrar materias por área, verbo y búsqueda
 function aplicarFiltro(materias, areaFilter, verbFilter) {
+  // Validar que materias sea un array
+  if (!Array.isArray(materias)) {
+    // Obtener elementos del DOM
+    const pagination = document.getElementById("pagination");
+
+    console.error('Materias no es un array:', materias);
+    tableBody.innerHTML = "<tr><td colspan='7'>Error en los datos: materias no válidas</td></tr>";
+    if (pagination) pagination.innerHTML = "";
+    return;
+  }
+  // Convertir para hacer comparación correcta
   const areaSeleccionadaNum = areaFilter ? parseInt(areaFilter) : null;
   const verboSeleccionadoId = verbFilter ? parseInt(verbFilter) : null;
 
 
   const materiasFiltradas = materias.filter(materia => {
-    const coincideArea = areaSeleccionadaNum === null || materia.id_area == areaSeleccionadaNum;
-    const coincideVerbo = verboSeleccionadoId === null ||
-      materia.verbos.includes(verboSeleccionadoId); // ← compara con los IDs directamente
-    return coincideArea && coincideVerbo;
+    return (
+      (areaSeleccionadaNum === null || materia.id_area == areaSeleccionadaNum) &&
+      (verboSeleccionadoId === null || materia.verbos.includes(verboSeleccionadoId))
+      // Compara con los IDs directamente
+    );
   });
 
-  if (materiasFiltradas.length === 0) {
-    tableBody.innerHTML = "<tr><td colspan='6'>No se encontraron resultados</td></tr>";
-  } else {
-    cargarTabla(materiasFiltradas);
-    actualizarGrafica(materiasFiltradas);
+
+  // Calcular total de filas para paginación (cada materia es una fila)
+  let totalItems = materiasFiltradas.length;
+
+  // Actualizar totalPages
+  totalPages = Math.max(1, Math.ceil(totalItems / limit));
+
+  // Ajustar currentPage si es mayor que totalPages
+  if (currentPage > totalPages) {
+    currentPage = totalPages;
+    offset = (currentPage - 1) * limit;
   }
+
+  // Paginar los datos
+  const startIndex = (currentPage - 1) * limit;
+  const paginatedData = materiasFiltradas.slice(startIndex, startIndex + limit);
+
+  // Actualizar la tabla y paginación
+  if (paginatedData.length === 0) {
+    tableBody.innerHTML = "<tr><td colspan='7'>No se encontraron resultados</td></tr>";
+    const pagination = document.getElementById("pagination");
+    if (pagination) pagination.innerHTML = "";
+  } else {
+    cargarTabla(paginatedData);
+    renderPagination();
+  }
+
+  actualizarGrafica(materiasFiltradas);
 }
 
 
@@ -264,10 +416,11 @@ async function cargarMateriaVerbo() {
   try {
     const response = await fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_materia_verbo.php");
     if (!response.ok) throw new Error("Error al obtener las materias");
-    const materias = await response.json(); // Declaramos materias correctamente
-    cargarTabla(materias);
+    const materias = await response.json();
+    aplicarFiltro(materias, "", ""); // Carga inicial con filtros vacíos
   } catch (error) {
-    console.error("Error cargando materias:", error);
+    console.error("Error cargando materiasVerbos:", error);
+    tableBody.innerHTML = "<tr><td colspan='7'>Error al cargar materias</td></tr>";
   }
 }
 
@@ -353,31 +506,114 @@ function cargarTabla(materiasFiltradas) {
 
   tableBody.innerHTML = ""; // Limpiar la tabla antes de insertar nuevos datos
 
-  materiasFiltradas.forEach(materia => {
+  // Definir constantes para los roles (coinciden con Auth.php)
+  const ROLES = {
+    SUPERADMIN: 0,
+    ADMIN: 1,
+    LECTOR: 2
+  };
 
+  materiasFiltradas.forEach(materia => {
     // Mostrar los nombres de los verbos asociados a cada materia
     const verbosNombres = materia.nombres_verbos ? materia.nombres_verbos.join(', ') : 'N/A';
 
-    tableBody.innerHTML += `
-        <tr>
-            <td>${materia.nombre}</td>
-            <td>${materia.creditos}</td>
-            <td>${verbosNombres}</td>  <!-- Mostrar los nombres de los verbos -->
-            <td>${materia.area || 'N/A'}</td>
-            <td>
-              <button 
-                type="button" 
-                class="btn btn-primary btn-actualizar" 
-                data-nombre="${materia.nombre}" 
-                data-bs-toggle="modal" 
-                data-bs-target="#modal-datos">
-                Actualizar
-              </button>
-            </td>
-        </tr>`;
+    // Generar la fila base con las 4 columnas siempre visibles
+    let rowHtml = `
+      <tr>
+        <td>${materia.nombre || 'N/A'}</td>
+        <td>${materia.creditos || 'N/A'}</td>
+        <td>${verbosNombres}</td>
+        <td>${materia.area || 'N/A'}</td>
+    `;
+
+    // Añadir la columna "Acción" solo si NO es Lector
+    if (window.rolUsuario !== ROLES.LECTOR) {
+      rowHtml += `
+        <td>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-actualizar" 
+            data-nombre="${materia.nombre}" 
+            data-bs-toggle="modal" 
+            data-bs-target="#modal-datos">
+            Actualizar
+          </button>
+        </td>
+      `;
+    }
+
+    // Cerrar la fila
+    rowHtml += `</tr>`;
+    tableBody.innerHTML += rowHtml;
   });
 }
+//////////////////////////////////////////////////////////////////////
+// RenderPagination
+function renderPagination() {
+  const pagination = document.getElementById("pagination");
+  if (!pagination) {
+    console.error("Elemento #pagination no encontrado en el DOM. Asegúrate de incluir <nav aria-label='Page navigation example'><ul id='pagination' class='pagination'></ul></nav> después de la tabla.");
+    return;
+  }
 
+  pagination.innerHTML = "";
+
+  // Botón "Atras"
+  const prevLi = document.createElement("li");
+  prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
+  prevLi.innerHTML = `<a class="page-link" href="#">Atras</a>`;
+  prevLi.querySelector("a").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage > 1) {
+      changePage(currentPage - 1);
+    }
+  });
+  pagination.appendChild(prevLi);
+
+  // Números de página (mostrar un rango limitado para evitar demasiados botones)
+  const maxButtons = 5; // Máximo de botones numéricos a mostrar
+  let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+  let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+  // Ajustar startPage si endPage está cerca del final
+  if (endPage - startPage + 1 < maxButtons) {
+    startPage = Math.max(1, endPage - maxButtons + 1);
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    const li = document.createElement("li");
+    li.className = `page-item ${i === currentPage ? "active" : ""}`;
+    li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+    li.querySelector("a").addEventListener("click", (e) => {
+      e.preventDefault();
+      changePage(i);
+    });
+    pagination.appendChild(li);
+  }
+
+  // Botón "Siguiente"
+  const nextLi = document.createElement("li");
+  nextLi.className = `page-item ${currentPage === totalPages ? "disabled" : ""}`;
+  nextLi.innerHTML = `<a class="page-link" href="#">Siguiente</a>`;
+  nextLi.querySelector("a").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      changePage(currentPage + 1);
+    }
+  });
+  pagination.appendChild(nextLi);
+}
+
+function changePage(page) {
+  if (page >= 1 && page <= totalPages) {
+    currentPage = page;
+    offset = (currentPage - 1) * limit;
+    evitarDesplazamientoGlobal = true;
+    filtrarMaterias();
+  } else {
+    console.warn('Página inválida:', page, 'Total Pages:', totalPages); // Depuración
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////
 //  Funcion para buscar la materia mas rapido en la parte de agregar datos
 async function buscador_materias_datos(inputId, apiUrl) {
@@ -532,7 +768,7 @@ $(document).ready(function () {
     e.preventDefault();
 
     var nombreMateria = $("#nombre-materia").val();
-    let verbosEnviados = verbosSeleccionados.join(",");    
+    let verbosEnviados = verbosSeleccionados.join(",");
 
     $.ajax({
       url: "http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/agregar_verbo_materia.php",
@@ -583,7 +819,6 @@ async function cargarVerbosDeMateria(idMateria) {
       console.error("Error desde PHP:", data.error);
       return;
     }
-    //console.log("Respuesta del servidor:", data);
     const contenedor = document.getElementById("verbos-seleccionados");
     contenedor.innerHTML = "";
 

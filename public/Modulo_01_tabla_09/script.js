@@ -1,13 +1,15 @@
 /////////////////////////////////////////////////////////////////////
+//Materias.php
 import { subirArriba, desplazamientoGrafica } from '/proyectoGrado/public/assets/js/desplazamiento.js';
 // Variables GLOBALES
 let state = {
   materias: [],
-  tipoFiltro: 'materias'
+  tipoFiltro: 'materias',
+  mostrarGrafica: false
 };
 // Variables para la paginación
 let evitarDesplazamientoGlobal = true;
-let limit = 20;  // Valor inicial (coincide con <option value="20" selected>)
+let limit = 20;  // Valor inicial
 let offset = 0; 
 let currentPage = 1;
 let totalPages = 1;
@@ -59,8 +61,10 @@ function inicializarEventosDOM() {
   const showChartButton = document.getElementById("show-chart");
   if (showChartButton) {
     showChartButton.addEventListener("click", () => {
+      state.mostrarGrafica = true;
       state.tipoFiltro = 'materias';
       evitarDesplazamientoGlobal = false;
+      graficaContainer.classList.remove('d-none');
       filtrarMaterias();
       graficaContainer.scrollIntoView({ behavior: "smooth" });
     });
@@ -120,22 +124,36 @@ function configurarModal() {
 
 function imprimirTabla() {
   const printWindow = window.open('', '', 'height=600,width=800');
-  const tableHtml = document.getElementById('data-table').outerHTML;
+  const table = document.getElementById('data-table').cloneNode(true);
+
+  const ahora = new Date();
+  const opciones = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+  };
+  const fechaHora = ahora.toLocaleString('es-ES', opciones);
 
   printWindow.document.write(`
-    <html>
-    <head>
-      <title>Tabla de Deserción</title>
-      <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
-      </style>
-    </head>
-    <body>
-      <h1>Tabla de Deserción</h1>
-      ${tableHtml}
-    </body>
-    </html>
+      <html>
+      <head>
+          <title>Tabla de Deserción</title>
+          <style>
+              table { width: 100%; border-collapse: collapse; }
+              th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+              h1 { text-align: center; margin-bottom: 10px; }
+              .fecha-hora { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; }
+          </style>
+      </head>
+      <body>
+          <h1>Tabla de Deserción</h1>
+          <p class="fecha-hora">Generado el ${fechaHora}</p>
+          ${table.outerHTML}
+      </body>
+      </html>
   `);
   printWindow.document.close();
   printWindow.print();
@@ -161,10 +179,9 @@ function generarDatosGrafica(materiasFiltradas) {
 
 // Función para actualizar la gráfica cada que hay petición
 function actualizarGrafica(materiasFiltradas) {
+  if (!state.mostrarGrafica) return; // Evitar generar gráfica si no se ha activado
   // Caso: No hay datos para graficar
-  console.log(`Contenido de materias: `,materiasFiltradas)
   if (!materiasFiltradas || materiasFiltradas.length === 0) {
-    console.log(`No se encontraron datos para graficar: `,materiasFiltradas)
     graficaContainer.innerHTML = '<center><p>No se encontraron datos para graficar</p></center>';
     return;
   }
@@ -288,11 +305,17 @@ async function filtrarMaterias() {
   const semestreSeleccionado = semestreFilter.value;
   const textoBusqueda = searchMateria.value.toLowerCase();
 
-  // Activa/Agrega botónes dinamicos (Por Materia / Por Área)
-  document.querySelectorAll(".btn-filtro").forEach(btn => {
-    btn.classList.remove("active"); // Quita clase activa de todos los botones
-  });
-  document.querySelector(`[data-filtro="${state.tipoFiltro}"]`).classList.add("active"); // Agrega clase activa al botón seleccionado
+  /// Activa/Agrega botónes dinámicos (Por Materia / Por Área) solo si la gráfica está activa
+  if (state.mostrarGrafica) {
+    document.querySelectorAll(".btn-filtro").forEach(btn => {
+      btn.classList.remove("active");
+    });
+    const btnFiltro = document.querySelector(`[data-filtro="${state.tipoFiltro}"]`);
+    if (btnFiltro) {
+      btnFiltro.classList.add("active");
+    }
+  }
+
   if (!state.materias || state.materias.length === 0) {
     try {
       const response = await fetch("http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/obtener_materia_datos.php");
@@ -316,7 +339,6 @@ function aplicarFiltro(materias, areaSeleccionada, carreraSeleccionada, semestre
   if (!Array.isArray(materias)) {
     // Obtener elementos del DOM
     const pagination = document.getElementById("pagination");
-    const numRegistros = document.getElementById("numRegistros");
     
     console.error('Materias no es un array:', materias);
     tableBody.innerHTML = "<tr><td colspan='7'>Error en los datos: materias no válidas</td></tr>";
@@ -481,7 +503,8 @@ function cargarTabla(paginatedData) {
       </tr>`;
   });
 }
-
+//////////////////////////////////////////////////////////////////////
+// RenderPagination
 function renderPagination() {
   const pagination = document.getElementById("pagination");
   if (!pagination) {
@@ -491,10 +514,10 @@ function renderPagination() {
 
   pagination.innerHTML = "";
 
-  // Botón "Previous"
+  // Botón "Anterior"
   const prevLi = document.createElement("li");
   prevLi.className = `page-item ${currentPage === 1 ? "disabled" : ""}`;
-  prevLi.innerHTML = `<a class="page-link" href="#">Previous</a>`;
+  prevLi.innerHTML = `<a class="page-link" href="#">Anterior</a>`;
   prevLi.querySelector("a").addEventListener("click", (e) => {
     e.preventDefault();
     if (currentPage > 1) {
@@ -524,10 +547,10 @@ function renderPagination() {
     pagination.appendChild(li);
   }
 
-  // Botón "Next"
+  // Botón "Siguiente"
   const nextLi = document.createElement("li");
   nextLi.className = `page-item ${currentPage === totalPages ? "disabled" : ""}`;
-  nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
+  nextLi.innerHTML = `<a class="page-link" href="#">Siguiente</a>`;
   nextLi.querySelector("a").addEventListener("click", (e) => {
     e.preventDefault();
     if (currentPage < totalPages) {

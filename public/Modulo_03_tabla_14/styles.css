@@ -42,14 +42,9 @@ body {
   padding-top: 50px;
 }
 
-.grafica-container{
+#grafica-container{
   width:100%;
-  height:100px
-}
-
-.nuevo-grafica-container{
-  width:100%;
-  height:100px
+  height: 700px;
 }
 
 h1 {

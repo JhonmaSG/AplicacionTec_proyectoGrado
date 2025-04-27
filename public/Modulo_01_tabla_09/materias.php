@@ -60,7 +60,7 @@ Auth::evitarCache();
         </select>
       </div>
 
-      <div class="filter-item">
+      <div class="filter-item dropdown w-100">
         <label for="search-materia"><b>Buscar materia:</b></label>
         <input type="text" id="search-materia" placeholder="Nombre de la materia">
       </div>

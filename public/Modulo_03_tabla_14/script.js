@@ -48,15 +48,33 @@ function inicializarEventosDOM() {
   }
 
   // Evento para activar pantalla completa en la gráfica
-  const fullscreenButton = document.getElementById("fullscreen-chart");
-  if (fullscreenButton) {
-    fullscreenButton.addEventListener("click", () => {
-      const chart = Highcharts.charts.find(chart => chart && chart.renderTo === graficaContainer);
-      if (chart) {
-        chart.fullscreen.toggle();
-      }
-    });
-  }
+const fullscreenButton = document.getElementById("fullscreen-chart");
+if (fullscreenButton) {
+  fullscreenButton.addEventListener("click", () => {
+    // Verificar si la página está en un iframe
+    if (window.self !== window.top) {
+      alert("El modo de pantalla completa no está soportado dentro de un iframe. Por favor, abre la página directamente o contacta al administrador.");
+      return;
+    }
+
+    // Verificar si la gráfica existe
+    if (!graficaContainer) {
+      alert("El contenedor de la gráfica no está disponible. Por favor, muestra la gráfica primero.");
+      return;
+    }
+
+    // Activar pantalla completa
+    if (graficaContainer.requestFullscreen) {
+      graficaContainer.requestFullscreen();
+    } else if (graficaContainer.webkitRequestFullscreen) { // Safari
+      graficaContainer.webkitRequestFullscreen();
+    } else if (graficaContainer.mozRequestFullScreen) { // Firefox
+      graficaContainer.mozRequestFullScreen();
+    } else {
+      alert("El modo de pantalla completa no está soportado en este navegador.");
+    }
+  });
+}
 
   // Evento para mostrar la gráfica con datos filtrados
   const showChartButton = document.getElementById("show-chart");
@@ -108,7 +126,7 @@ function inicializarEventosDOM() {
 }
 
 
-// 
+// START DOM
 document.addEventListener("DOMContentLoaded", inicializarEventosDOM);
 
 function configurarModal() {
@@ -125,39 +143,9 @@ function configurarModal() {
   };
 }
 function imprimirTabla() {
-  const printWindow = window.open('', '', 'height=600,width=800');
-  
-  // Clonar la tabla para no modificar el DOM original
+  const printWindow = window.open('', '', 'height=800,width=1000');
   const table = document.getElementById('data-table').cloneNode(true);
-  
-  // Definir constantes para los roles (coinciden con Auth.php)
-  const ROLES = {
-    SUPERADMIN: 0,
-    ADMIN: 1,
-    LECTOR: 2
-  };
 
-  // Eliminar la columna "Acción" solo si el usuario NO es Lector
-  if (window.rolUsuario !== ROLES.LECTOR) {
-    // Eliminar la última columna del encabezado (<th>)
-    const headerRow = table.querySelector('thead tr');
-    if (headerRow && headerRow.cells.length > 0) {
-      headerRow.deleteCell(-1); // Elimina la última celda del encabezado ("Acción")
-    }
-
-    // Eliminar la última columna de cada fila del cuerpo (<td>)
-    const bodyRows = table.querySelectorAll('tbody tr');
-    bodyRows.forEach(row => {
-      if (row.cells.length > 0) {
-        row.deleteCell(-1); // Elimina la última celda de cada fila ("Acción")
-      }
-    });
-  }
-
-  // Obtener el HTML de la tabla modificada
-  const tableHtml = table.outerHTML;
-
-  // Obtener la fecha y hora actual en formato legible
   const ahora = new Date();
   const opciones = {
     year: 'numeric',
@@ -169,27 +157,94 @@ function imprimirTabla() {
   };
   const fechaHora = ahora.toLocaleString('es-ES', opciones);
 
-  // Generar el documento de impresión
+  // Obtener la configuración de la gráfica actual
+  let chartConfig = null;
+  const chart = Highcharts.charts.find(chart => chart && chart.renderTo === graficaContainer);
+  if (chart) {
+    chartConfig = JSON.parse(JSON.stringify(chart.userOptions)); // Clonar la configuración
+    chartConfig.chart = chartConfig.chart || {};
+    chartConfig.chart.renderTo = 'print-grafica-container';
+    chartConfig.chart.animation = false; // Desactivar animaciones
+    chartConfig.series = chartConfig.series.map(series => ({
+      ...series,
+      animation: false // Desactivar animaciones en series
+    }));
+    // Añadir evento load para la gráfica
+    chartConfig.chart.events = chartConfig.chart.events || {};
+    chartConfig.chart.events.load = function() {
+      window.focus(); // Enfocar la ventana
+      window.print(); // Abrir diálogo de impresión
+    };
+  }
+
   printWindow.document.write(`
     <html>
     <head>
-      <title>Tabla de Materias y Verbos</title>
+      <title>Tasa de Deserción por Materia</title>
       <style>
-        table { width: 100%; border-collapse: collapse; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
         h1 { text-align: center; margin-bottom: 10px; }
         .fecha-hora { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; }
+        #print-grafica-container {
+          width: 100%;
+          min-height: 400px;
+          height: auto;
+          margin-top: 20px;
+          box-sizing: border-box;
+        }
+        @media print {
+          body { margin: 0.5in; }
+          h1, .fecha-hora { page-break-after: avoid; }
+          table { page-break-inside: auto; width: 100%; }
+          #print-grafica-container {
+            page-break-before: auto; /* Permitir que siga a la tabla */
+            page-break-inside: avoid; /* Evitar dividir la gráfica */
+            width: 100% !important;
+            height: auto !important;
+            min-height: 400px;
+            max-height: 600px; /* Ajustar al alto útil de A4 */
+            box-sizing: border-box;
+            overflow: visible;
+          }
+          .highcharts-container, .highcharts-container svg {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 600px !important;
+          }
+          @page { size: A4; margin: 0.5in; }
+        }
       </style>
+      <!-- Cargar Highcharts -->
+      <script src="https://code.highcharts.com/12.1/highcharts.js"></script>
+      <script src="https://code.highcharts.com/12.1/modules/exporting.js"></script>
+      <script src="https://code.highcharts.com/12.1/highcharts-more.js"></script>
     </head>
     <body>
-      <h1>Tabla de Materias y Verbos</h1>
+      <h1>Relaciones de Verbos, Materias y Áreas</h1>
       <p class="fecha-hora">Generado el ${fechaHora}</p>
-      ${tableHtml}
+      ${table.outerHTML}
+      <div id="print-grafica-container"></div>
+      <script>
+        // Renderizar la gráfica o mostrar mensaje
+        ${chartConfig ? `
+          Highcharts.chart('print-grafica-container', ${JSON.stringify(chartConfig)});
+          // Respaldo con setTimeout por si el evento load falla
+          setTimeout(() => {
+            window.focus();
+            window.print();
+          }, 1000);
+        ` : `
+          document.getElementById('print-grafica-container').innerHTML = '<p style="text-align: center; color: #555;">No se encontró una gráfica para imprimir.</p>';
+          window.focus();
+          window.print();
+        `}
+      </script>
     </body>
     </html>
   `);
   printWindow.document.close();
-  printWindow.print();
 }
 ///////////////////////////////////////////////////////////////////
 // Función para preparar datos de la gráfica desde la tabla
@@ -618,6 +673,10 @@ function changePage(page) {
 //  Funcion para buscar la materia mas rapido en la parte de agregar datos
 async function buscador_materias_datos(inputId, apiUrl) {
   const inputElemento = document.getElementById(inputId);
+  if (!inputElemento) {
+    console.error(`Elemento con ID "${inputId}" no encontrado en el DOM`);
+    return;
+  }
   const listaSugerencias = document.createElement("div");
   listaSugerencias.classList.add("dropdown-menu", "show");
   listaSugerencias.style.display = "none";

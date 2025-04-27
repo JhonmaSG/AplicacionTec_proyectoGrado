@@ -49,6 +49,7 @@ Auth::evitarCache();
       <button id="show-chart" class="btn btn-info">Mostrar Gráfica</button>
       <button id="print-table" class="btn btn-info">Imprimir Tabla</button>
       <button id="fullscreen-chart" class="btn btn-info">Vista Fullscreen</button>
+
       <?php include 'includes/popup_verbo.php'; ?>
     </div>
 

@@ -1,4 +1,5 @@
-<?php require_once './Auth.php';
+<?php
+require_once './Auth.php';
 Auth::iniciarSesion();
 Auth::redirigirSiNoAutenticado();
 Auth::evitarCache();
@@ -8,6 +9,7 @@ Auth::evitarCache();
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Principal</title>
     <link rel="stylesheet" href="../css/styles_principal.css">
     <link rel="stylesheet" href="../css/styles_menu.css">
@@ -17,9 +19,9 @@ Auth::evitarCache();
 <body>
     <?php include './menu.php'; ?>
     <div class="container">
-        <h1 class="text-center mt-4">Bienvenido a SGPM UD</h1>
+        <h1 class="text-center my-4">Bienvenido a SGPM UD</h1>
 
-        <p class="intro-text text-center mt-3 mb-5">
+        <p class="intro-text text-center mb-5">
             Esta aplicación de gestión académica ha sido desarrollada para apoyar la sistematización, visualización y análisis de la información curricular de los programas de <strong>Tecnología en Sistematización de Datos</strong> e <strong>Ingeniería Telemática</strong> de la Universidad Francisco José de Caldas.
         </p>
 
@@ -28,9 +30,7 @@ Auth::evitarCache();
         <div class="dashboard-grid">
             <a href="/proyectoGrado/public/Modulo_01_tabla_09/materias.php" class="dashboard-card">
                 <h3>Materias</h3>
-                <p>Gestión y organización de las materias académicas por:
-                    <br>Nombre, Carrera, Área, Semestre y Tasa de deserción.
-                </p>
+                <p>Gestión y organización de las materias académicas por:<br>Nombre, Carrera, Área, Semestre y Tasa de deserción.</p>
             </a>
             <a href="/proyectoGrado/public/Modulo_03_tabla_14/verbos.php" class="dashboard-card">
                 <h3>Verbos</h3>
@@ -38,11 +38,11 @@ Auth::evitarCache();
             </a>
             <a href="/proyectoGrado/public/Modulo_09_tabla_45/habilidad_perfil.php" class="dashboard-card">
                 <h3>Características vs Perfil Profesional</h3>
-                <p>cambiar</p>
+                <p>Visualización de características en relación con el perfil profesional.</p>
             </a>
             <a href="/proyectoGrado/public/Modulo_20_ObjetivosVs_RA/objetivos_RA.php" class="dashboard-card">
                 <h3>Objetivos de Programa y Resultados de Aprendizaje</h3>
-                <p>cambiar</p>
+                <p>Gestión de objetivos y resultados de aprendizaje de los programas.</p>
             </a>
             <a href="/proyectoGrado/public/Modulo_33_ProcesoGeneracionRA/index.php" class="dashboard-card">
                 <h3>Documentación</h3>

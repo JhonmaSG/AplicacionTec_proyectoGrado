@@ -1,17 +1,18 @@
+/* Contenedor principal */
 .container {
-  max-width: 1280px;
-  margin: 80px auto 0 auto;
-  padding: 50px 30px;
   background-color: white;
   border: 1px solid #e0e0e0;
   border-radius: 15px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  margin-top: 60px;
+  padding: 30px;
+  height: auto; /* Crecer con el contenido */
+  min-height: calc(100vh - 60px); /* Cubrir la pantalla como mínimo */
   box-sizing: border-box;
-
-  height: auto;
-  overflow: visible;
+  overflow: auto; /* Permitir desplazamiento si el contenido excede */
 }
 
+/* Texto introductorio */
 .intro-text {
   font-size: 1.1rem;
   max-width: 800px;
@@ -20,28 +21,32 @@
   color: #444;
 }
 
+/* Cuadrícula de tarjetas */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* << este es el truco */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Aumentado a 250px para escritorio */
   gap: 20px;
-  justify-content: center;
   margin-bottom: 40px;
-  justify-items: center;
+  max-width: 100%; /* Evita desbordamiento horizontal */
+  box-sizing: border-box;
+  height: auto; /* Crecer con las tarjetas */
 }
 
+/* Tarjetas */
 .dashboard-card {
-  width: 100%;
-  max-width: 250px;
-  max-height: 210px;
   background-color: white;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   text-align: center;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   color: #333;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Misma altura en cada fila */
 }
 
 .dashboard-card:hover {
@@ -51,26 +56,79 @@
 
 .dashboard-card h3 {
   color: #007bff;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
 }
 
-@media (max-width: 600px) {
+.dashboard-card p {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0;
+}
+
+/* Media queries para responsive */
+@media (max-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Más flexible en tablet */
+  }
+}
+
+@media (max-width: 768px) {
   .container {
-    margin: 20px 10px 0 10px;
-    padding: 20px 15px;
+    margin-top: 60px;
+    padding: 20px;
+    min-height: calc(100vh - 60px);
+    height: auto;
+    overflow: auto; /* Permitir desplazamiento */
   }
 
   .intro-text {
     font-size: 1rem;
-    padding: 0 5px;
+    padding: 0 10px;
   }
 
-  .dashboard-grid h3{
-    font-size: 14px;
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* Una columna en móvil */
+    gap: 15px;
   }
 
   .dashboard-card {
-    max-width: 100%;
-    padding: 15px;  
+    padding: 15px;
+  }
+
+  .dashboard-card h3 {
+    font-size: 1.15rem;
+  }
+
+  .dashboard-card p {
+    font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .container {
+    margin-top: 50px;
+    padding: 15px;
+    min-height: calc(100vh - 50px);
+    height: auto;
+    overflow: auto;
+  }
+
+  .intro-text {
+    font-size: 0.95rem;
+    padding: 0 5px;
+  }
+
+  .dashboard-card {
+    padding: 12px;
   }
 
   .dashboard-card h3 {
@@ -78,10 +136,14 @@
   }
 
   .dashboard-card p {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
 
-  h1, h2 {
+  h1 {
     font-size: 1.3rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
   }
 }

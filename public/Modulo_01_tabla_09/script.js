@@ -95,6 +95,12 @@ function inicializarEventosDOM() {
     });
   });
 
+  //Evento para filtrar materias en el apartado de los datos
+  // Configurar autocompletado para el campo de filtro y el modal
+  const apiUrl = "http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/buscar_materia.php";
+  buscador_materias_datos("search-materia", apiUrl); // Para el filtro
+  buscador_materias_datos("nombre-materia", apiUrl); // Para el modal
+
   // Modal
   configurarModal();
 
@@ -123,40 +129,108 @@ function configurarModal() {
 }
 
 function imprimirTabla() {
-  const printWindow = window.open('', '', 'height=600,width=800');
+  const printWindow = window.open('', '', 'height=800,width=1000');
   const table = document.getElementById('data-table').cloneNode(true);
 
   const ahora = new Date();
   const opciones = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
   };
   const fechaHora = ahora.toLocaleString('es-ES', opciones);
 
+  // Obtener la configuración de la gráfica actual
+  let chartConfig = null;
+  const chart = Highcharts.charts.find(chart => chart && chart.renderTo === graficaContainer);
+  if (chart) {
+    chartConfig = JSON.parse(JSON.stringify(chart.userOptions)); // Clonar la configuración
+    chartConfig.chart = chartConfig.chart || {};
+    chartConfig.chart.renderTo = 'print-grafica-container';
+    chartConfig.chart.animation = false; // Desactivar animaciones
+    chartConfig.series = chartConfig.series.map(series => ({
+      ...series,
+      animation: false // Desactivar animaciones en series
+    }));
+    // Añadir evento load para la gráfica
+    chartConfig.chart.events = chartConfig.chart.events || {};
+    chartConfig.chart.events.load = function() {
+      window.focus(); // Enfocar la ventana
+      window.print(); // Abrir diálogo de impresión
+    };
+  }
+
   printWindow.document.write(`
-      <html>
-      <head>
-          <title>Tabla de Deserción</title>
-          <style>
-              table { width: 100%; border-collapse: collapse; }
-              th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
-              h1 { text-align: center; margin-bottom: 10px; }
-              .fecha-hora { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; }
-          </style>
-      </head>
-      <body>
-          <h1>Tabla de Deserción</h1>
-          <p class="fecha-hora">Generado el ${fechaHora}</p>
-          ${table.outerHTML}
-      </body>
-      </html>
+    <html>
+    <head>
+      <title>Tasa de Deserción por Materia</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+        h1 { text-align: center; margin-bottom: 10px; }
+        .fecha-hora { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; }
+        #print-grafica-container {
+          width: 100%;
+          min-height: 400px;
+          height: auto;
+          margin-top: 20px;
+          box-sizing: border-box;
+        }
+        @media print {
+          body { margin: 0.5in; }
+          h1, .fecha-hora { page-break-after: avoid; }
+          table { page-break-inside: auto; width: 100%; }
+          #print-grafica-container {
+            page-break-before: auto; /* Permitir que siga a la tabla */
+            page-break-inside: avoid; /* Evitar dividir la gráfica */
+            width: 100% !important;
+            height: auto !important;
+            min-height: 400px;
+            max-height: 600px; /* Ajustar al alto útil de A4 */
+            box-sizing: border-box;
+            overflow: visible;
+          }
+          .highcharts-container, .highcharts-container svg {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 600px !important;
+          }
+          @page { size: A4; margin: 0.5in; }
+        }
+      </style>
+      <!-- Cargar Highcharts -->
+      <script src="https://code.highcharts.com/12.1/highcharts.js"></script>
+      <script src="https://code.highcharts.com/12.1/modules/exporting.js"></script>
+      <script src="https://code.highcharts.com/12.1/highcharts-more.js"></script>
+    </head>
+    <body>
+      <h1>Relaciones de Verbos, Materias y Áreas</h1>
+      <p class="fecha-hora">Generado el ${fechaHora}</p>
+      ${table.outerHTML}
+      <div id="print-grafica-container"></div>
+      <script>
+        // Renderizar la gráfica o mostrar mensaje
+        ${chartConfig ? `
+          Highcharts.chart('print-grafica-container', ${JSON.stringify(chartConfig)});
+          // Respaldo con setTimeout por si el evento load falla
+          setTimeout(() => {
+            window.focus();
+            window.print();
+          }, 1000);
+        ` : `
+          document.getElementById('print-grafica-container').innerHTML = '<p style="text-align: center; color: #555;">No se encontró una gráfica para imprimir.</p>';
+          window.focus();
+          window.print();
+        `}
+      </script>
+    </body>
+    </html>
   `);
   printWindow.document.close();
-  printWindow.print();
 }
 
 // Ejecutar la inicialización al cargar la página
@@ -578,10 +652,37 @@ tableBody.addEventListener("change", filtrarMaterias); //tableBody - areaFilter
 // Funcion para buscar la materia mas rapido en la parte de agregar datos
 async function buscador_materias_datos(inputId, apiUrl) {
   const inputElemento = document.getElementById(inputId);
+  if (!inputElemento) {
+    console.error(`Elemento con ID "${inputId}" no encontrado en el DOM`);
+    return;
+  }
+
+  // Añadir clase form-control al input para estilización de Bootstrap
+  inputElemento.classList.add("form-control");
+
+  // Buscar contenedor dropdown; si no existe, crear uno
+  let dropdownContainer = inputElemento.closest(".dropdown");
+  if (!dropdownContainer) {
+    dropdownContainer = document.createElement("div");
+    dropdownContainer.classList.add("dropdown", "w-100");
+    inputElemento.parentNode.insertBefore(dropdownContainer, inputElemento);
+    dropdownContainer.appendChild(inputElemento);
+  }
+
+  // Crear lista de sugerencias
   const listaSugerencias = document.createElement("div");
-  listaSugerencias.classList.add("dropdown-menu", "show");
+  listaSugerencias.classList.add("dropdown-menu");
   listaSugerencias.style.display = "none";
-  inputElemento.parentNode.appendChild(listaSugerencias);
+  listaSugerencias.style.position = "absolute"; // Asegurar posicionamiento correcto
+  dropdownContainer.appendChild(listaSugerencias);
+
+  // Ajustar posición de la lista debajo del input
+  const actualizarPosicion = () => {
+    const inputRect = inputElemento.getBoundingClientRect();
+    listaSugerencias.style.top = `${inputRect.bottom - dropdownContainer.getBoundingClientRect().top}px`;
+    listaSugerencias.style.left = `${inputRect.left - dropdownContainer.getBoundingClientRect().left}px`;
+    listaSugerencias.style.width = `${inputRect.width}px`;
+  };
 
   inputElemento.addEventListener("input", async function () {
     const query = this.value.trim();
@@ -591,35 +692,48 @@ async function buscador_materias_datos(inputId, apiUrl) {
     }
 
     try {
-      const response = await fetch(`${apiUrl}?q=${query}`);
+      const response = await fetch(`${apiUrl}?q=${encodeURIComponent(query)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
 
       listaSugerencias.innerHTML = "";
-      if (data.length > 0) {
+      if (Array.isArray(data) && data.length > 0) {
         listaSugerencias.style.display = "block";
+        actualizarPosicion(); // Ajustar posición al mostrar la lista
         data.forEach(materia => {
-          const item = document.createElement("div");
-          item.classList.add("dropdown-item");
-          item.textContent = materia.nombre;
-          item.addEventListener("click", function () {
-            inputElemento.value = materia.nombre;
-            listaSugerencias.style.display = "none";
-          });
-          listaSugerencias.appendChild(item);
+          if (materia.nombre) {
+            const item = document.createElement("div");
+            item.classList.add("dropdown-item");
+            item.textContent = materia.nombre;
+            item.addEventListener("click", function () {
+              inputElemento.value = materia.nombre;
+              listaSugerencias.style.display = "none";
+              if (inputId === "search-materia") {
+                filtrarMaterias();
+              }
+            });
+            listaSugerencias.appendChild(item);
+          }
         });
       } else {
         listaSugerencias.style.display = "none";
       }
     } catch (error) {
-      console.error("Error en la solicitud:", error);
+      console.error(`Error en la solicitud para ${inputId}:`, error);
+      listaSugerencias.style.display = "none";
     }
   });
 
   document.addEventListener("click", function (e) {
-    if (!inputElemento.contains(e.target) && !listaSugerencias.contains(e.target)) {
+    if (!dropdownContainer.contains(e.target)) {
       listaSugerencias.style.display = "none";
     }
   });
+
+  // Ajustar posición al redimensionar la ventana
+  window.addEventListener("resize", actualizarPosicion);
 }
 /////////////////////////////////////////////////////////////////////////
 // Enviar formulario por AJAX

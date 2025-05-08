@@ -10,7 +10,7 @@ Auth::evitarCache();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Principal</title>
+    <title>Página Principal SGMP UD</title>
     <link rel="stylesheet" href="../css/styles_principal.css">
     <link rel="stylesheet" href="../css/styles_menu.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,10 +19,10 @@ Auth::evitarCache();
 <body>
     <?php include './menu.php'; ?>
     <div class="container">
-        <h1 class="text-center my-4">Bienvenido a SGPM UD</h1>
+        <h1 class="text-center my-4">Bienvenido a SGMP UD</h1>
 
         <p class="intro-text text-center mb-5">
-            Esta aplicación de gestión académica ha sido desarrollada para apoyar la sistematización, visualización y análisis de la información curricular de los programas de <strong>Tecnología en Sistematización de Datos</strong> e <strong>Ingeniería Telemática</strong> de la Universidad Francisco José de Caldas.
+            Esta aplicación llamada <b>Sistema Gestor de Materias de Pensum</b> ha sido desarrollada para apoyar la sistematización, visualización y análisis de la información curricular de los programas de <strong>Tecnología en Sistematización de Datos</strong> e <strong>Ingeniería Telemática</strong> de la Universidad Francisco José de Caldas.
         </p>
 
         <h2 class="text-center mb-4 text-primary">Módulos del Sistema</h2>

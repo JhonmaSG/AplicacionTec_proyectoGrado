@@ -2,7 +2,6 @@
 body {
     font-family: 'Arial', sans-serif;
     /* background-color: #f4f4f9;*/
-    background: linear-gradient(to bottom right, #4c82af, #47b8ff);
     margin: 0;
     padding: 0;
     transition: background-color 0.5s, color 0.5s;
@@ -139,7 +138,6 @@ body.night-mode .justification {
 }
 
 table td.active {
-    transform: scale(1.6);
     background-color: #ffeb3b;
     box-shadow: 0 0 10px #ffc107;
     color: #333;

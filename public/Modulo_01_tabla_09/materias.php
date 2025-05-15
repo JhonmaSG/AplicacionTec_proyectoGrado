@@ -14,6 +14,7 @@ Auth::evitarCache();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualización de Deserción</title>
+  <link rel="icon" href="http://localhost/proyectoGrado/app/Acceso/img/icon_page.ico" type="image/x-icon">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="../assets/css/styles_menu.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

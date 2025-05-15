@@ -14,9 +14,9 @@ Auth::evitarCache();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visor de PDF con Menú Lateral</title>
+    <link rel="icon" href="http://localhost/proyectoGrado/app/Acceso/img/icon_page.ico" type="image/x-icon">
     <link rel="stylesheet" href="../assets/css/styles_document.css">
     <link rel="stylesheet" href="../assets/css/styles_menu.css">
-
 </head>
 
 <body>

@@ -853,7 +853,7 @@ $(document).ready(function () {
       },
       error: function (xhr) {
         //console.error("Error en AJAX:", xhr.responseText);
-        $("#warning-message").removeClass("d-none").text("Verifique que el verbo ya no este relacionado.");
+        $("#error-message").removeClass("d-none").text("Verifique que el verbo ya no este relacionado.");
       }
     });
   });

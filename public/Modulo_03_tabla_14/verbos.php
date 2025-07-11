@@ -71,9 +71,11 @@ Auth::evitarCache();
     </nav><br>
 
     <!-- Descripción del verbo -->
+    <center>
+      <h4>Descripción de Verbos asociados:</h4>
+    </center>
     <div id="verb-description" class="description list-group mt-2">
       <center>
-        <h4>Verbos asociados:</h4>
         <br>
         <h6> Selecciona un verbo o una materia para ver más información.</h6>
       </center>

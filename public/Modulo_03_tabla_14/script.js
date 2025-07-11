@@ -765,6 +765,7 @@ function actualizarListaVerbos() {
   toggleBotonGuardar();
 }
 
+//able / disable botton guardar : verbo
 function toggleBotonGuardar() {
   if (verbosSeleccionados.length === 0) {
     $("#btn-guardar").prop("disabled", true);
@@ -779,6 +780,9 @@ $("#btn-atras").click(function () {
 //////////////////////////////////////////////////////////////////////////////
 // Eliminan verbos de la lista
 $(document).ready(function () {
+  $('#modal-datos').on('show.bs.modal', function () {
+    $("#btn-guardar").prop("disabled", true);
+  });
 
   // Eliminan verbos seleccionados de la lista
   $(document).on("click", ".eliminar-verbo", function () {
@@ -849,7 +853,7 @@ $(document).ready(function () {
       },
       error: function (xhr) {
         //console.error("Error en AJAX:", xhr.responseText);
-        $("#error-message").removeClass("d-none").text("Ocurrió un error al guardar.");
+        $("#warning-message").removeClass("d-none").text("Verifique que el verbo ya no este relacionado.");
       }
     });
   });
@@ -871,6 +875,7 @@ document.addEventListener("click", async function (e) {
 
 async function cargarVerbosDeMateria(idMateria) {
   try {
+    $("#btn-guardar").prop("disabled", true); // Desactiva botón al abrir
     const response = await fetch(`http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_verbos_por_materia.php?idMateria=${idMateria}`);
     const data = await response.json();
 

@@ -7,7 +7,7 @@ Logger::registrarAccesoModulo($conn, 'Gestion_de_usuarios');
 Auth::iniciarSesion();
 Auth::redirigirSiNoAutenticado();
 
-// Bloquear acceso a Lector (rol_id = 2)
+// Bloquear acceso a Lector
 if (Auth::obtenerRol() === 2) {
     header('Location: /proyectoGrado/unauthorized.php');
     exit;

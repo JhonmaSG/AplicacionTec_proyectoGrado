@@ -86,7 +86,7 @@ Auth::evitarCache();
           <tr>
             <th>Materia</th>
             <th>Creditos</th>
-            <th class="d-flex flex-wrap gap-1">Verbo</th>
+            <th class="text-center">Verbo</th>
             <th>Área</th>
             <?php if (Auth::esAdmin()): ?>
               <th>Acción</th>

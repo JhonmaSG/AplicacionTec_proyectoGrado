@@ -42,7 +42,7 @@
                     <input type="hidden" id="verbo_id" name="verbo_id">
 
                     <!-- Mensaje de error -->
-                    <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+                    <div id="warning-message" class="alert alert-danger d-none" role="alert"></div>
 
                     <!-- Botones de acción -->
                     <div class="modal-footer">

@@ -87,8 +87,10 @@ Auth::evitarCache();
         <thead>
           <tr>
             <th>Materia</th>
+            <th>Semestre</th>
             <th>Creditos</th>
             <th class="text-center">Verbo</th>
+            <th># Verbos</th>
             <th>Área</th>
             <?php if (Auth::esAdmin()): ?>
               <th>Acción</th>

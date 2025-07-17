@@ -11,11 +11,13 @@ try {
         $creditos = $row['creditos'];
         $materias[] = [
             "nombre" => $nombre_materia,
+            "semestre" => $row['semestre'],
             "creditos" => $creditos,
             "area" => $row['NombreArea'],
             "verbos" => array_map('intval', explode(',', $row['verbos_ids'])),
             "nombres_verbos" => array_map('trim', explode(',', $row['verbos'])),
-            "id_area" =>  $row['id_area']
+            "id_area" => $row['id_area'],
+            "total_verbos" => isset($row['total_verbos']) ? (int)$row['total_verbos'] : 0
         ];
     }
 

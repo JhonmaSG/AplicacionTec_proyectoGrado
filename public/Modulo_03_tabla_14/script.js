@@ -252,6 +252,7 @@ function generarDatosGrafica(materiasFiltradas) {
   return materiasFiltradas.map(materia => ({
     name: materia.nombre,
     y: materia.verbos.length,
+    semestre: materia.semestre,
     creditos: materia.creditos,
     verbos: materia.nombres_verbos
   }));
@@ -300,6 +301,7 @@ function actualizarGrafica(materiasFiltradas) {
       const verbos = Array.isArray(punto.verbos) ? punto.verbos.join(', ') : 'N/D';
       return `<b>${this.series.name}</b><br>
               <b>${state.tipoFiltro === 'materias' ? 'Materia' : 'Área'}:</b> ${punto.name}<br>
+              ${state.tipoFiltro === 'materias' ? `<b>Semestre:</b> ${punto.semestre ?? 'N/D'}<br>` : ''}
               ${state.tipoFiltro === 'materias' ? `<b>Créditos:</b> ${punto.creditos ?? 'N/D'}<br>` : ''}
               <b>Cantidad de Verbos:</b> ${punto.y}<br>
               <b>Verbos:</b> ${verbos}`;
@@ -576,8 +578,10 @@ function cargarTabla(materiasFiltradas) {
     let rowHtml = `
       <tr>
         <td>${materia.nombre || 'N/A'}</td>
+        <td>${materia.semestre || 'N/A'}</td>
         <td>${materia.creditos || 'N/A'}</td>
         <td>${verbosNombres}</td>
+        <td>${materia.total_verbos}</td>
         <td>${materia.area || 'N/A'}</td>
     `;
 
@@ -958,7 +962,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const fila = celda.closest("tr");
     const celdas = fila?.getElementsByTagName("td");
 
-    if (celdas && celda === celdas[2]) {
+    if (celdas && celda === celdas[3]) {
       const verbosTexto = celda.textContent.trim();
       mostrarVerbosEnDescripcion(verbosTexto);
     }

@@ -102,7 +102,7 @@ function inicializarEventosDOM() {
   buscador_materias_datos("nombre-materia", apiUrl); // Para el modal
 
   // Modal
-  configurarModal();
+  //configurarModal();
 
   // Inicialización de la página
   cargarAreas();
@@ -110,24 +110,31 @@ function inicializarEventosDOM() {
   cargarSemestres();
   cargarMaterias();
 }
-
+/*
 function configurarModal() {
   let modal = document.getElementById("modal-datos");
+  let modalActualizar = document.getElementById("modal-datos-actualizar");
   let btn = document.getElementById("btnAbrir");
 
   function cerrarModal() {
     modal.style.display = "none";
   }
 
+  function cerrarModalActualizar() {
+    modalActualizar.style.display = "none";
+  }
+
   window.onclick = function (event) {
-    if (event.target == modal) {
+    if (event.target == modal || event.target == modalActualizar) {
       cerrarModal();
+      cerrarModalActualizar();
     }
   };
 
   window.cerrarModal = cerrarModal;
+  window.cerrarModal = cerrarModalActualizar;
 }
-
+*/
 function imprimirTabla() {
   const printWindow = window.open('', '', 'height=800,width=1000');
   const table = document.getElementById('data-table').cloneNode(true);
@@ -558,14 +565,26 @@ function cargarSemestres() {
 // Función para cargar datos en la tabla este utiliza el cargar materias 
 function cargarTabla(paginatedData) {
   tableBody.innerHTML = "";
+
   if (!Array.isArray(paginatedData)) {
     console.error("paginatedData no es un array:", paginatedData);
     tableBody.innerHTML = "<tr><td colspan='7'>Error en los datos</td></tr>";
     return;
   }
 
+  const ROLES = {
+    SUPERADMIN: 0,
+    ADMIN: 1,
+    LECTOR: 2
+  };
+
   paginatedData.forEach(({ materia, dato }) => {
-    tableBody.innerHTML += `
+    if (!materia || !dato) {
+      console.warn("⚠️ Registro incompleto:", { materia, dato });
+      return;
+    }
+
+    let rowHtml = `
       <tr>
         <td>${materia.nombre || 'N/A'}</td>
         <td>${materia.area || 'N/A'}</td>
@@ -574,9 +593,30 @@ function cargarTabla(paginatedData) {
         <td>${dato.inscritos || '0'}</td>
         <td>${dato.reprobados || '0'}</td>
         <td>${dato.tasa_reprobacion || '0'}%</td>
-      </tr>`;
+    `;
+
+    if (window.rolUsuario !== ROLES.LECTOR) {
+      rowHtml += `
+        <td>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-actualizar"  
+            data-id-dato="${dato.id_dato_materia}"
+            data-nombre="${materia.nombre}"
+            data-periodo="${dato.periodo}" 
+            data-inscritos="${dato.inscritos}" 
+            data-reprobados="${dato.reprobados}">
+            Actualizar
+          </button>
+        </td>
+      `;
+    }
+
+    rowHtml += `</tr>`;
+    tableBody.innerHTML += rowHtml;
   });
 }
+
 //////////////////////////////////////////////////////////////////////
 // RenderPagination
 function renderPagination() {
@@ -770,6 +810,31 @@ function guardarMateria() {
   });
 }
 
+// Función para Actualizar Materia
+function actualizarMateria() {
+  let formData = $("#form-datos-actualizar").serialize();
+
+  $.ajax({
+    url: "http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/editar_datos_materia.php",
+    type: "POST",
+    data: formData,
+    dataType: "json",
+    success: function (response) {
+      if (response.success) {
+        mostrarMensaje("success", response.message);
+        $("#modal-datos-actualizar").modal("hide");
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        mostrarMensaje("error", response.message);
+      }
+    },
+    error: function () {
+      mostrarMensaje("error", "Escriba datos válidos");
+    }
+  });
+}
+
+
 // Función para mostrarMensajes
 function mostrarMensaje(tipo, mensaje) {
   let alertClass = tipo === "success" ? "alert-success" : "alert-danger";
@@ -784,3 +849,39 @@ function mostrarMensaje(tipo, mensaje) {
     $(".alert").alert("close");
   }, 2000);
 }
+
+// Evento que abre el modal de edición con los datos cargados
+$(document).on("click", ".btn-actualizar", function () {
+  const boton = $(this);
+
+  const id = boton.data("id-dato");
+  const nombre = boton.data("nombre");
+  const periodoCompleto = boton.data("periodo"); // "2020-1"
+  const inscritos = boton.data("inscritos");
+  const reprobados = boton.data("reprobados");
+
+  // Separar año y periodo (si viene como "2020-1")
+  const [anio, periodo] = periodoCompleto.split("-");
+
+  // Asignar valores al formulario de edición
+  $("#editar-id-dato").val(id);
+  $("#editar-nombre-materia").val(nombre);
+  $("#editar-anio").val(anio);
+  $("#editar-periodo").val(periodo);
+  $("#editar-inscritos").val(inscritos);
+  $("#editar-reprobados").val(reprobados);
+
+  // Mostrar modal de edición
+  const modalEditar = new bootstrap.Modal(document.getElementById("modal-datos-actualizar"));
+  modalEditar.show();
+
+});
+
+
+// Envío del formulario de edición
+$(document).ready(function () {
+  $("#form-datos-actualizar").submit(function (e) {
+    e.preventDefault();
+    actualizarMateria(); // Esta función ya la tienes definida
+  });
+});

@@ -29,6 +29,7 @@ Auth::evitarCache();
 <body>
 
   <?php include '../assets/php/menu.php'; ?>
+  <?php include './includes/popup_editar.php'; ?>
 
   <div class="container" id="container">
     <h1>Visualización de Deserción por Materia</h1>
@@ -105,6 +106,9 @@ Auth::evitarCache();
             <th>Inscritos</th>
             <th>Reprobados</th>
             <th>Tasa de Reprobación (%)</th>
+            <?php if (Auth::esAdmin()): ?>
+              <th>Acción</th>
+            <?php endif; ?>
           </tr>
         </thead>
         <tbody id="table-body">

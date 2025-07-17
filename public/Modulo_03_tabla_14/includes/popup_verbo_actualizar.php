@@ -1,5 +1,3 @@
-<!-- Botón para abrir el modal -->
-
 <!-- Modal -->
 <div class="modal fade" id="modal-datos" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
     <div class="modal-dialog">

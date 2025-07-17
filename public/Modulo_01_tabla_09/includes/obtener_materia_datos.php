@@ -24,6 +24,7 @@ while ($row = $result->fetch_assoc()) {
     }
 
     $materias[$id_materia]["datos"][] = [
+        "id_dato_materia" => $row['Id_dato_materia'],
         "periodo" => $row['periodo'],
         "inscritos" => $row['inscritos'],
         "reprobados" => $row['reprobados'],

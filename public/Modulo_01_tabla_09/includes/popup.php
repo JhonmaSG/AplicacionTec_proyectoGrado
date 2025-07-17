@@ -27,7 +27,10 @@
                         </div>
                         <div class="col-md-6">
                             <label for="periodo" class="form-label">Período:</label>
-                            <input type="number" class="form-control" id="periodo" name="periodo" min="1" max="3" step="2" required>
+                            <select class="form-select" id="editar-periodo" name="periodo" required>
+                                <option value="1">1</option>
+                                <option value="3">3</option>
+                            </select>
                         </div>
                     </div>
 

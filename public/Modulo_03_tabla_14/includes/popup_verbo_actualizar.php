@@ -11,7 +11,7 @@
                     <!-- Nombre de la materia -->
                     <div class="mb-3">
                         <label for="nombre-materia" class="form-label">Nombre de la Materia:</label>
-                        <input type="text" class="form-control" id="nombre-materia" name="nombre_materia" required autocomplete="off">
+                        <input type="text" class="form-control" id="nombre-materia" name="nombre_materia" required readonly autocomplete="off">
                         <div id="lista-sugerencias" class="dropdown-menu show" style="display: none;"></div>
                     </div>
 

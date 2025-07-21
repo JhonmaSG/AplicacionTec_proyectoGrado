@@ -146,6 +146,24 @@ function imprimirTabla() {
   const printWindow = window.open('', '', 'height=800,width=1000');
   const table = document.getElementById('data-table').cloneNode(true);
 
+  // Eliminar columna "Acción" del <thead> y todas las celdas correspondientes del <tbody>
+  const ths = table.querySelectorAll('thead th');
+  let accionIndex = -1;
+
+  ths.forEach((th, index) => {
+    if (th.textContent.trim().toLowerCase() === 'acción') {
+      accionIndex = index;
+      th.remove(); // Eliminar encabezado
+    }
+  });
+
+  if (accionIndex !== -1) {
+    table.querySelectorAll('tbody tr').forEach(row => {
+      const td = row.children[accionIndex];
+      if (td) td.remove(); // Eliminar celda correspondiente
+    });
+  }
+
   const ahora = new Date();
   const opciones = {
     year: 'numeric',

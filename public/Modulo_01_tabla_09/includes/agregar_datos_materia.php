@@ -11,7 +11,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         echo json_encode(["success" => true, "message" => "Datos guardados correctamente."]);
     } catch (PDOException $e) {
-        echo json_encode(["success" => false, "message" => "Error: " . $e->getMessage()]);
+        if ($e->getCode() == 23000) {
+            // Código 23000: Violación de restricción (ej. UNIQUE, PRIMARY KEY)
+            echo json_encode(["success" => false, "message" => "Ya existe un registro para ese año y período."]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Error: " . $e->getMessage()]);
+        }
     }
 } else {
     echo json_encode(["success" => false, "message" => "Solicitud no válida."]);

@@ -595,6 +595,8 @@ function cargarTabla(paginatedData) {
         <td>${dato.tasa_reprobacion || '0'}%</td>
     `;
 
+     // Añadir la columna "Acción" solo si NO es Lector
+     console.log("rolUsuario: ",window.rolUsuario);
     if (window.rolUsuario !== ROLES.LECTOR) {
       rowHtml += `
         <td>
@@ -780,38 +782,65 @@ async function buscador_materias_datos(inputId, apiUrl) {
 $(document).ready(function () {
   $("#form-datos").submit(function (e) {
     e.preventDefault();
+
+    const anio = parseInt($("#anio").val());
+    const inscritos = parseInt($("#inscritos").val());
+    const reprobados = parseInt($("#reprobados").val());
+
+    if (anio < 0 || inscritos < 0 || reprobados < 0) {
+      mostrarMensaje("error", "No se permiten valores negativos en Año, Inscritos o Reprobados.");
+      return;
+    }
+
     guardarMateria();
   });
 });
 
+
 // Función para guardar Materia
 function guardarMateria() {
-  let formData = $("#form-datos").serialize(); // Serializa los datos del formulario
+  // Limpiar clases de error antes de enviar
+  $("#form-datos input").removeClass("is-invalid");
+
+  let formData = $("#form-datos").serialize();
 
   $.ajax({
     url: "http://localhost/proyectoGrado/public/Modulo_01_tabla_09/includes/agregar_datos_materia.php",
     type: "POST",
-    data: $("#form-datos").serialize(),
+    data: formData,
     dataType: "json",
     success: function (response) {
       if (response.success) {
         mostrarMensaje("success", response.message);
-        $("#modal-datos").modal("hide"); // Cierra el modal
-        setTimeout(() => location.reload(), 1000); // Recarga
+        $("#modal-datos").modal("hide");
+        setTimeout(() => location.reload(), 1000);
       } else {
         mostrarMensaje("error", response.message);
+
+        const msg = response.message.toLowerCase();
+        if (msg.includes("materia") && msg.includes("no existe")) {
+          $("#nombre_materia").addClass("is-invalid");
+        }
+        if (msg.includes("ya existe")) {
+          $("#periodo, #nombre_materia").addClass("is-invalid");
+        }
+        if (msg.includes("negativos")) {
+          $("#inscritos, #reprobados").addClass("is-invalid");
+        }
       }
     },
-    error: function (xhr, status, error) {
-      //console.error(" Error ajax:", status, error); // 🔍 Ver errores AJAX
-      mostrarMensaje("error", "Escriba datos validos");
-
+    error: function () {
+      mostrarMensaje("warning", "Ya existe un registro para ese año y periodo.");
     }
   });
 }
 
+
 // Función para Actualizar Materia
 function actualizarMateria() {
+  // Limpiar clases de error antes de enviar
+  $("#form-datos-actualizar input").removeClass("is-invalid");
+
   let formData = $("#form-datos-actualizar").serialize();
 
   $.ajax({
@@ -826,29 +855,72 @@ function actualizarMateria() {
         setTimeout(() => location.reload(), 1000);
       } else {
         mostrarMensaje("error", response.message);
+
+        const msg = response.message.toLowerCase();
+        if (msg.includes("ya existe")) {
+          $("#periodo_actualizar").addClass("is-invalid");
+        }
+        if (msg.includes("negativos")) {
+          $("#inscritos_actualizar, #reprobados_actualizar").addClass("is-invalid");
+        }
       }
     },
     error: function () {
-      mostrarMensaje("error", "Escriba datos válidos");
+      mostrarMensaje("warning", "Ya existe un registro para ese año y periodo.");
     }
   });
 }
 
-
 // Función para mostrarMensajes
 function mostrarMensaje(tipo, mensaje) {
-  let alertClass = tipo === "success" ? "alert-success" : "alert-danger";
-  let mensajeHtml = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                          ${mensaje}
-                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>`;
+  // Determinar clase CSS según el tipo de mensaje
+  let alertClass = {
+    success: "alert-success",
+    error: "alert-danger",
+    warning: "alert-warning",
+    info: "alert-info"
+  }[tipo] || "alert-secondary"; // Fallback
 
-  $("#modal-datos .modal-body").prepend(mensajeHtml);
 
+  // Estructura del mensaje HTML
+  let mensajeHtml = `
+    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+      ${mensaje}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  `;
+
+  // Detectar cuál modal está activo
+  const modalAgregar = document.getElementById("modal-datos");
+  const modalEditar = document.getElementById("modal-datos-actualizar");
+
+  // Insertar el mensaje dentro del modal correspondiente
+  if (modalAgregar && modalAgregar.classList.contains("show")) {
+    $("#modal-datos .modal-body").prepend(mensajeHtml);
+  } else if (modalEditar && modalEditar.classList.contains("show")) {
+    $("#modal-datos-actualizar .modal-body").prepend(mensajeHtml);
+  } else {
+    // Como fallback: insertar en el cuerpo si no hay modal activo
+    $("body").prepend(mensajeHtml);
+  }
+
+  // Opcional: resaltar campos si el mensaje indica duplicado
+  if (mensaje.toLowerCase().includes("año") && mensaje.toLowerCase().includes("período")) {
+    $("#anio").addClass("is-invalid");
+    $("#periodo").addClass("is-invalid");
+
+    // Remover error cuando el usuario escriba de nuevo
+    $("#anio, #periodo").on("input", function () {
+      $(this).removeClass("is-invalid");
+    });
+  }
+
+  // Eliminar la alerta automáticamente después de 2.5 segundos
   setTimeout(() => {
     $(".alert").alert("close");
-  }, 2000);
+  }, 2500);
 }
+
 
 // Evento que abre el modal de edición con los datos cargados
 $(document).on("click", ".btn-actualizar", function () {
@@ -882,6 +954,6 @@ $(document).on("click", ".btn-actualizar", function () {
 $(document).ready(function () {
   $("#form-datos-actualizar").submit(function (e) {
     e.preventDefault();
-    actualizarMateria(); // Esta función ya la tienes definida
+    actualizarMateria();
   });
 });

@@ -18,14 +18,14 @@
                     <!-- Nombre de la materia -->
                     <div class="mb-3">
                         <label for="nombre-materia" class="form-label">Nombre de la Materia:</label>
-                        <input type="text" class="form-control" id="nombre-materia" name="nombre_materia" required autocomplete="off">
+                        <input type="text" class="form-control" id="nombre-materia" name="nombre_materia" placeholder='Digita el nombre de la materia' required autocomplete="off">
                         <div id="lista-sugerencias" class="dropdown-menu show" style="display: none;"></div>
                     </div>
 
                     <!-- Selección de verbos -->
                     <div class="mb-3">
                         <label for="verb-filter_popup" class="form-label">Verbos:</label>
-                        <select id="verb-filter_popup" multiple class="form-control" size="5">
+                        <select id="verb-filter_popup" multiple class="form-control" size="10">
                             <option hidden>Selecciona uno o varios verbos</option>
                         </select>
                     </div>

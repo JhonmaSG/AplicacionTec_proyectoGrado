@@ -16,14 +16,14 @@
                 <form id="form-datos">
                     <div class="mb-3">
                         <label for="nombre-materia" class="form-label">Nombre de la Materia:</label>
-                        <input type="text" class="form-control" id="nombre-materia" name="nombre_materia" required autocomplete="off">
+                        <input type="text" class="form-control" id="nombre-materia" name="nombre_materia" placeholder='Digita el nombre de la materia' required autofocus autocomplete="off">
                         <div id="lista-sugerencias" class="dropdown-menu show" style="display: none;"></div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
                             <label for="anio" class="form-label">Año:</label>
-                            <input type="number" class="form-control" id="anio" name="anio" required>
+                            <input type="number" class="form-control" id="anio" name="anio" min="0" placeholder='Ej: 2025' required>
                         </div>
                         <div class="col-md-6">
                             <label for="periodo" class="form-label">Período:</label>
@@ -37,11 +37,11 @@
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label for="inscritos" class="form-label">Inscritos:</label>
-                            <input type="number" class="form-control" id="inscritos" name="inscritos" required>
+                            <input type="number" class="form-control" id="inscritos" name="inscritos" min="0" step="1" placeholder='Digita número de Inscritos' required>
                         </div>
                         <div class="col-md-6">
                             <label for="reprobados" class="form-label">Reprobados:</label>
-                            <input type="number" class="form-control" id="reprobados" name="reprobados" required>
+                            <input type="number" class="form-control" id="reprobados" name="reprobados" min="0" step="1" placeholder='Digita número de Reprobados' required>
                         </div>
                     </div>
                     <div id="error-message" class="alert alert-danger d-none" role="alert"></div>

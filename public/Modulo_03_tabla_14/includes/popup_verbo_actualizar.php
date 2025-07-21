@@ -18,7 +18,7 @@
                     <!-- Selección de verbos -->
                     <div class="mb-3">
                         <label for="verb-filter_popup" class="form-label">Verbos:</label>
-                        <select id="verb-filter_popup" multiple class="form-control" size="5">
+                        <select id="verb-filter_popup" multiple class="form-control" size="10">
                             <option hidden>Selecciona uno o varios verbos</option>
                         </select>
                     </div>

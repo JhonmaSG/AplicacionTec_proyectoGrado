@@ -857,7 +857,7 @@ $(document).ready(function () {
       },
       error: function (xhr) {
         //console.error("Error en AJAX:", xhr.responseText);
-        $("#error-message").removeClass("d-none").text("Verifique que el verbo ya no este relacionado.");
+        $("#error-message").removeClass("d-none").text("Verifique la información o si el verbo ya no este relacionado.");
       }
     });
   });
@@ -967,24 +967,26 @@ document.addEventListener("DOMContentLoaded", function () {
       mostrarVerbosEnDescripcion(verbosTexto);
     }
   });
+   mostrarVerbosEnDescripcion("");
 });
 
+// Función para mostrar los verbos en div de descripcion
 function mostrarVerbosEnDescripcion(verbosTexto) {
   const divDescripcion = document.getElementById("verb-description");
-
-  if (!verbosTexto) {
-    divDescripcion.innerHTML = "<p>No hay verbos asociados.</p>";
-    return;
-  }
-
-  const verbosArray = verbosTexto.split(',').map(v => v.trim().toLowerCase());
 
   fetch("http://localhost/proyectoGrado/public/Modulo_03_tabla_14/includes/obtener_verbos.php")
     .then(response => response.json())
     .then(data => {
-      const verbosFiltrados = data.filter(verbo =>
-        verbosArray.includes(verbo.nombre.toLowerCase())
-      );
+      let verbosFiltrados;
+
+      if (!verbosTexto || verbosTexto.trim() === "") {
+        verbosFiltrados = data; // Mostrar todos
+      } else {
+        const verbosArray = verbosTexto.split(',').map(v => v.trim().toLowerCase());
+        verbosFiltrados = data.filter(verbo =>
+          verbosArray.includes(verbo.nombre.toLowerCase())
+        );
+      }
 
       if (verbosFiltrados.length === 0) {
         divDescripcion.innerHTML = "<p>No se encontraron descripciones para los verbos.</p>";

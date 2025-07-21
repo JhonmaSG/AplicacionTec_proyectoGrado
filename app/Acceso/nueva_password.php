@@ -62,12 +62,12 @@ if (!isset($_SESSION['nid'])) {
                         <form action="actualizar_password.php" method="POST">
                             <div class="mb-3">
                                 <label for="password" class="form-label">Nueva Contraseña</label>
-                                <input type="password" name="password" id="password" class="form-control" required>
+                                <input type="password" name="password" id="password" class="form-control" placeholder='Ingresa tu nueva contraseña' required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder='Confirma tu nueva contraseña' required>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">Actualizar Contraseña</button>

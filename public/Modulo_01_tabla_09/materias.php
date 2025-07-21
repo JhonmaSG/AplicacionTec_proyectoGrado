@@ -131,6 +131,9 @@ Auth::evitarCache();
     <button id="btnSubir">↑</button>
   </div>
 
+  <script>
+    window.rolUsuario = <?php echo json_encode(Auth::obtenerRol()); ?>;
+  </script>
   <script type="module" src="/proyectoGrado/public/assets/js/desplazamiento.js"></script>
   <script type="module" src="script.js"></script>
   <script src="/proyectoGrado/public/assets/js/script_menu.js"></script>

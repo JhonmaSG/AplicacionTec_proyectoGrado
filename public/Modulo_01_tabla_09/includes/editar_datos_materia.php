@@ -15,7 +15,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         echo json_encode(["success" => true, "message" => "Registro actualizado correctamente."]);
     } catch (PDOException $e) {
-        echo json_encode(["success" => false, "message" => "Error al actualizar: " . $e->getMessage()]);
+        if ($e->getCode() == 23000) {
+            echo json_encode(["success" => false, "message" => "Ya existe un registro para ese año y período."]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Error al actualizar: " . $e->getMessage()]);
+        }
     }
 } else {
     echo json_encode(["success" => false, "message" => "Solicitud no válida."]);

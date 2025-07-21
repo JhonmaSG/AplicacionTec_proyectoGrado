@@ -10,7 +10,7 @@ unset($_SESSION['mensaje']); // Limpiar el mensaje después de mostrarlo
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | SGMP UD</title>
+    <title>Login | SGIPM UD</title>
     <link rel="icon" href="http://localhost/proyectoGrado/app/Acceso/img/icon_page.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -50,8 +50,8 @@ unset($_SESSION['mensaje']); // Limpiar el mensaje después de mostrarlo
             </div>
             <div class="col-md-6 p-5">
                 <div class="text-center mb-4">
-                    <h1>SGMP UD</h1>
-                    <h4>Inicio de sesión</h4><br>
+                    <h2>Sistema de Gestión de Información Pénsum de Materias UD</h2>
+                    <h5>Inicio de sesión</h5><br>
                 </div>
 
                 <?php if (!empty($mensaje)) : ?>

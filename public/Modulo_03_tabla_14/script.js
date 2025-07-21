@@ -612,7 +612,8 @@ function cargarTabla(materiasFiltradas) {
             class="btn btn-primary btn-actualizar" 
             data-nombre="${materia.nombre}" 
             data-bs-toggle="modal" 
-            data-bs-target="#modal-datos">
+            data-bs-target="#modal-datos"
+            data-accion="actualizar">
             Actualizar
           </button>
         </td>
@@ -1028,3 +1029,20 @@ function mostrarVerbosEnDescripcion(verbosTexto) {
       divDescripcion.innerHTML = "<p>Error al cargar las descripciones.</p>";
     });
 }
+
+// Detectar apertura del modal y configurar el campo nombre de la materia
+document.getElementById('modal-datos').addEventListener('show.bs.modal', function (event) {
+  const button = event.relatedTarget;
+  const accion = button?.dataset.accion || 'agregar'; // Por defecto es 'agregar'
+  const inputNombre = document.getElementById('nombre-materia');
+
+  if (accion === 'actualizar') {
+    inputNombre.readOnly = true;
+    inputNombre.value = button.dataset.nombre || ''; // Valor desde el botón
+  } else {
+    inputNombre.readOnly = false;
+    inputNombre.value = ''; // Limpiar si es agregar
+  }
+});
+
+

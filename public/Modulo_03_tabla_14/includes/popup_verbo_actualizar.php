@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div class="modal fade" id="modal-datos" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+<div class="modal fade" id="modal-datos-actualizar" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
